@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentalSensor", "EnvironmentalSensor\EnvironmentalSensor.csproj", "{A2F3FC78-3B0D-4330-8BED-9C1DD18411DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2F3FC78-3B0D-4330-8BED-9C1DD18411DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2F3FC78-3B0D-4330-8BED-9C1DD18411DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2F3FC78-3B0D-4330-8BED-9C1DD18411DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2F3FC78-3B0D-4330-8BED-9C1DD18411DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43679B7A-438D-4044-AEB6-D026814B9EA5}
+	EndGlobalSection
+EndGlobal
