@@ -1,7 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Ksnm">
+      <HintPath>..\..\..\Ksnm\Ksnm\Ksnm\bin\Release\Ksnm.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
