@@ -9,7 +9,9 @@ namespace DemoApp
 {
     public partial class Form1 : Form
     {
-
+        /// <summary>
+        /// 選択したポート
+        /// </summary>
         string selectedPort = null;
 
         public Form1()
@@ -30,6 +32,9 @@ namespace DemoApp
             UpdateUI();
         }
 
+        /// <summary>
+        /// UI更新
+        /// </summary>
         void UpdateUI()
         {
             if (serialPort.IsOpen)
@@ -48,20 +53,32 @@ namespace DemoApp
             }
         }
 
+        #region イベント
+
+        /// <summary>
+        /// フォームが閉じる前に発生
+        /// </summary>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             serialPort.Close();
         }
 
+        /// <summary>
+        /// ポート選択ドロップダウンリスト
+        /// </summary>
         private void PortsComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedPort = (string)portsComboBox.SelectedItem;
         }
 
+        /// <summary>
+        /// 接続ボタン
+        /// </summary>
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             if (serialPort.IsOpen == false && selectedPort != null)
             {
+                /// マニュアル:4.1. Communication specification
                 serialPort.BaudRate = 115200;
                 serialPort.DataBits = 8;
                 serialPort.StopBits = StopBits.One;
@@ -73,12 +90,18 @@ namespace DemoApp
             UpdateUI();
         }
 
+        /// <summary>
+        /// 切断ボタン
+        /// </summary>
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             serialPort.Close();
             UpdateUI();
         }
 
+        /// <summary>
+        /// データが受信された
+        /// </summary>
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             byte[] buffer = new byte[1024];
@@ -112,7 +135,9 @@ namespace DemoApp
                 }
             }
         }
-
+        /// <summary>
+        /// 最新データを取得ボタン
+        /// </summary>
         private void LatestDataLongGetButton_Click(object sender, EventArgs e)
         {
             if (serialPort.IsOpen)
@@ -128,5 +153,6 @@ namespace DemoApp
                 Console.WriteLine("閉じてる");
             }
         }
+        #endregion イベント
     }
 }
