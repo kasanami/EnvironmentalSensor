@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentalSensor", "Envi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentalSensorTests", "EnvironmentalSensorTests\EnvironmentalSensorTests.csproj", "{3AF4B2C2-893B-4212-ACF4-49EFE0CC4816}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{CBAA2A57-02FC-4DBC-8E11-F2B2F26F00B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3AF4B2C2-893B-4212-ACF4-49EFE0CC4816}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AF4B2C2-893B-4212-ACF4-49EFE0CC4816}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AF4B2C2-893B-4212-ACF4-49EFE0CC4816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBAA2A57-02FC-4DBC-8E11-F2B2F26F00B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBAA2A57-02FC-4DBC-8E11-F2B2F26F00B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBAA2A57-02FC-4DBC-8E11-F2B2F26F00B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBAA2A57-02FC-4DBC-8E11-F2B2F26F00B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
