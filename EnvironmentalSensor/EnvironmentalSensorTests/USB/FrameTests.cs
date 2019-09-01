@@ -1,12 +1,17 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EnvironmentalSensor.USB;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EnvironmentalSensor.USB.Tests
 {
-    [TestClass]
-    public class FrameTest
+    [TestClass()]
+    public class FrameTests
     {
-        [TestMethod]
+        [TestMethod()]
         public void ToBytesTest()
         {
             var payload = new Payloads.LatestDataLongCommandPayload();
