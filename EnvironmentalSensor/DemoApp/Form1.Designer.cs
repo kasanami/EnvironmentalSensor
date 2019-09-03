@@ -29,24 +29,33 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.portsComboBox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.stateLlabel = new System.Windows.Forms.Label();
-            this.connectButton = new System.Windows.Forms.Button();
             this.disconnectButton = new System.Windows.Forms.Button();
-            this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this.connectButton = new System.Windows.Forms.Button();
+            this.stateLlabel = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.portsComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.memoryDataLongGetButton = new System.Windows.Forms.Button();
             this.latestDataLongGetButton = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this.memoryIndexGetButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataChart)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -55,6 +64,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.groupBox2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox3, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -102,53 +112,17 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(788, 46);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
-            // label1
+            // disconnectButton
             // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 40);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "ポート";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // portsComboBox
-            // 
-            this.portsComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.portsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.portsComboBox.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.portsComboBox.FormattingEnabled = true;
-            this.portsComboBox.Location = new System.Drawing.Point(103, 3);
-            this.portsComboBox.Name = "portsComboBox";
-            this.portsComboBox.Size = new System.Drawing.Size(94, 32);
-            this.portsComboBox.TabIndex = 2;
-            this.portsComboBox.SelectedIndexChanged += new System.EventHandler(this.PortsComboBox_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label2.Location = new System.Drawing.Point(203, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 40);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "状態";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // stateLlabel
-            // 
-            this.stateLlabel.AutoSize = true;
-            this.stateLlabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.stateLlabel.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.stateLlabel.Location = new System.Drawing.Point(303, 0);
-            this.stateLlabel.Name = "stateLlabel";
-            this.stateLlabel.Size = new System.Drawing.Size(94, 40);
-            this.stateLlabel.TabIndex = 4;
-            this.stateLlabel.Text = "-";
-            this.stateLlabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.disconnectButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.disconnectButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.disconnectButton.Location = new System.Drawing.Point(503, 3);
+            this.disconnectButton.Name = "disconnectButton";
+            this.disconnectButton.Size = new System.Drawing.Size(94, 34);
+            this.disconnectButton.TabIndex = 6;
+            this.disconnectButton.Text = "切断";
+            this.disconnectButton.UseVisualStyleBackColor = true;
+            this.disconnectButton.Click += new System.EventHandler(this.DisconnectButton_Click);
             // 
             // connectButton
             // 
@@ -162,21 +136,53 @@
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.ConnectButton_Click);
             // 
-            // disconnectButton
+            // stateLlabel
             // 
-            this.disconnectButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.disconnectButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.disconnectButton.Location = new System.Drawing.Point(503, 3);
-            this.disconnectButton.Name = "disconnectButton";
-            this.disconnectButton.Size = new System.Drawing.Size(94, 34);
-            this.disconnectButton.TabIndex = 6;
-            this.disconnectButton.Text = "切断";
-            this.disconnectButton.UseVisualStyleBackColor = true;
-            this.disconnectButton.Click += new System.EventHandler(this.DisconnectButton_Click);
+            this.stateLlabel.AutoSize = true;
+            this.stateLlabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stateLlabel.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.stateLlabel.Location = new System.Drawing.Point(303, 0);
+            this.stateLlabel.Name = "stateLlabel";
+            this.stateLlabel.Size = new System.Drawing.Size(94, 40);
+            this.stateLlabel.TabIndex = 4;
+            this.stateLlabel.Text = "-";
+            this.stateLlabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // serialPort
+            // label2
             // 
-            this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label2.Location = new System.Drawing.Point(203, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(94, 40);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "状態";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // portsComboBox
+            // 
+            this.portsComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.portsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.portsComboBox.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.portsComboBox.FormattingEnabled = true;
+            this.portsComboBox.Location = new System.Drawing.Point(103, 3);
+            this.portsComboBox.Name = "portsComboBox";
+            this.portsComboBox.Size = new System.Drawing.Size(94, 32);
+            this.portsComboBox.TabIndex = 2;
+            this.portsComboBox.SelectedIndexChanged += new System.EventHandler(this.PortsComboBox_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(94, 40);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "ポート";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // groupBox2
             // 
@@ -191,9 +197,12 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.Controls.Add(this.memoryIndexGetButton, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.memoryDataLongGetButton, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.latestDataLongGetButton, 0, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 15);
@@ -204,17 +213,73 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(788, 46);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
+            // memoryDataLongGetButton
+            // 
+            this.memoryDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.memoryDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.memoryDataLongGetButton.Location = new System.Drawing.Point(265, 3);
+            this.memoryDataLongGetButton.Name = "memoryDataLongGetButton";
+            this.memoryDataLongGetButton.Size = new System.Drawing.Size(256, 34);
+            this.memoryDataLongGetButton.TabIndex = 5;
+            this.memoryDataLongGetButton.Text = "保存データ取得";
+            this.memoryDataLongGetButton.UseVisualStyleBackColor = true;
+            this.memoryDataLongGetButton.Click += new System.EventHandler(this.MemoryDataLongGetButton_Click);
+            // 
             // latestDataLongGetButton
             // 
             this.latestDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.latestDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.latestDataLongGetButton.Location = new System.Drawing.Point(3, 3);
             this.latestDataLongGetButton.Name = "latestDataLongGetButton";
-            this.latestDataLongGetButton.Size = new System.Drawing.Size(388, 34);
+            this.latestDataLongGetButton.Size = new System.Drawing.Size(256, 34);
             this.latestDataLongGetButton.TabIndex = 4;
             this.latestDataLongGetButton.Text = "最新データ取得";
             this.latestDataLongGetButton.UseVisualStyleBackColor = true;
             this.latestDataLongGetButton.Click += new System.EventHandler(this.LatestDataLongGetButton_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.dataChart);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(3, 143);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(794, 304);
+            this.groupBox3.TabIndex = 2;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "データ";
+            // 
+            // dataChart
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.dataChart.ChartAreas.Add(chartArea1);
+            this.dataChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend1.Name = "Legend1";
+            this.dataChart.Legends.Add(legend1);
+            this.dataChart.Location = new System.Drawing.Point(3, 15);
+            this.dataChart.Name = "dataChart";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.dataChart.Series.Add(series1);
+            this.dataChart.Size = new System.Drawing.Size(788, 286);
+            this.dataChart.TabIndex = 0;
+            this.dataChart.Text = "chart1";
+            // 
+            // serialPort
+            // 
+            this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
+            // 
+            // memoryIndexGetButton
+            // 
+            this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.memoryIndexGetButton.Location = new System.Drawing.Point(527, 3);
+            this.memoryIndexGetButton.Name = "memoryIndexGetButton";
+            this.memoryIndexGetButton.Size = new System.Drawing.Size(258, 34);
+            this.memoryIndexGetButton.TabIndex = 6;
+            this.memoryIndexGetButton.Text = "保存データ数取得";
+            this.memoryIndexGetButton.UseVisualStyleBackColor = true;
+            this.memoryIndexGetButton.Click += new System.EventHandler(this.MemoryIndexGetButton_Click);
             // 
             // Form1
             // 
@@ -230,6 +295,8 @@
             this.tableLayoutPanel2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataChart)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -249,6 +316,10 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button latestDataLongGetButton;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.DataVisualization.Charting.Chart dataChart;
+        private System.Windows.Forms.Button memoryDataLongGetButton;
+        private System.Windows.Forms.Button memoryIndexGetButton;
     }
 }
 

@@ -15,5 +15,9 @@
         LatestDataShort = 0x5022,
         AccelerationMemoryDataHeader = 0x503E,
         AccelerationMemoryData = 0x503F,
+        /// <summary>
+        /// FLASH memory に保存されているセンシングデータの index 数を取得する．
+        /// </summary>
+        LatestMemoryInformation = 0x5004,
     }
 }

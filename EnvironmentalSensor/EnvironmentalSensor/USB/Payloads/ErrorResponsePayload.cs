@@ -1,4 +1,6 @@
-﻿namespace EnvironmentalSensor.USB.Payloads
+﻿using System.Text;
+
+namespace EnvironmentalSensor.USB.Payloads
 {
     /// <summary>
     /// エラー返答
@@ -17,6 +19,16 @@
         public ErrorResponsePayload(byte[] buffer, int index) : base(buffer, index)
         {
             Code = (ErrorCode)Data[0];
+        }
+        public override string ToString()
+        {
+            var text = new StringBuilder();
+            text.AppendLine("{");
+            text.AppendLine($"{nameof(Command)}={Command}");
+            text.AppendLine($"{nameof(Address)}={Address}");
+            text.AppendLine($"{nameof(Code)}={Code}");
+            text.AppendLine("}");
+            return text.ToString();
         }
     }
 }

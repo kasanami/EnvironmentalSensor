@@ -43,6 +43,7 @@ namespace DemoApp
                 connectButton.Enabled = false;
                 disconnectButton.Enabled = true;
                 latestDataLongGetButton.Enabled = true;
+                memoryDataLongGetButton.Enabled = true;
             }
             else
             {
@@ -50,6 +51,7 @@ namespace DemoApp
                 connectButton.Enabled = true;
                 disconnectButton.Enabled = false;
                 latestDataLongGetButton.Enabled = false;
+                memoryDataLongGetButton.Enabled = false;
             }
         }
 
@@ -135,6 +137,7 @@ namespace DemoApp
                 }
             }
         }
+
         /// <summary>
         /// 最新データを取得ボタン
         /// </summary>
@@ -146,6 +149,44 @@ namespace DemoApp
                 var frame = new Frame(payload);
                 var buffer = frame.ToBytes();
                 Console.WriteLine(buffer.ToDebugString());
+                serialPort.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                Console.WriteLine("閉じてる");
+            }
+        }
+
+        /// <summary>
+        /// 保存データを取得ボタン
+        /// </summary>
+        private void MemoryDataLongGetButton_Click(object sender, EventArgs e)
+        {
+            if (serialPort.IsOpen)
+            {
+                var payload = new MemoryDataLongCommandPayload();
+                payload.StartMemoryIndex = 0;
+                payload.EndMemoryIndex = 0;
+                var frame = new Frame(payload);
+                var buffer = frame.ToBytes();
+                Console.WriteLine(buffer.ToDebugString());
+                serialPort.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                Console.WriteLine("閉じてる");
+            }
+        }
+
+        private void MemoryIndexGetButton_Click(object sender, EventArgs e)
+        {
+            if (serialPort.IsOpen)
+            {
+                var payload = new CommandPayload();
+                payload.Command = FrameCommand.Read;
+                payload.Address = FrameAddress.LatestMemoryInformation;
+                var frame = new Frame(payload);
+                var buffer = frame.ToBytes();
                 serialPort.Write(buffer, 0, buffer.Length);
             }
             else

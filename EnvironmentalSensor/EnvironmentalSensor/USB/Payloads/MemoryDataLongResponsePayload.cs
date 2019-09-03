@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Ksnm.ExtensionMethods.System.IO.Stream;
 
 namespace EnvironmentalSensor.USB.Payloads
@@ -55,6 +56,42 @@ namespace EnvironmentalSensor.USB.Payloads
             ValueFlag = (byte)memoryStream.ReadByte();
             PGAFlag = (byte)memoryStream.ReadByte();
             SeismicIntensityFlag = (byte)memoryStream.ReadByte();
+        }
+
+        public override string ToString()
+        {
+            var text = new StringBuilder();
+            text.AppendLine("{");
+            text.AppendLine(nameof(MemoryIndex) + "=" + MemoryIndex);
+            text.AppendLine(nameof(TimeCounter) + "=" + TimeCounter);
+            text.AppendLine(nameof(IsError) + "=" + IsError);
+            text.AppendLine(nameof(Temperature) + "=" + (Temperature * 0.01) + "degC");
+            text.AppendLine(nameof(RelativeHumidity) + "=" + (RelativeHumidity * 0.01) + "%RH");
+            text.AppendLine(nameof(AmbientLight) + "=" + (AmbientLight) + "lx");
+            text.AppendLine(nameof(BarometricPressure) + "=" + (BarometricPressure * 0.001) + "hPa");
+            text.AppendLine(nameof(SoundNoise) + "=" + (SoundNoise * 0.01) + "dB");
+            text.AppendLine(nameof(eTVOC) + "=" + (eTVOC) + "ppb");
+            text.AppendLine(nameof(eCO2) + "=" + (eCO2) + "ppm");
+            text.AppendLine(nameof(DiscomfortIndex) + "=" + (DiscomfortIndex * 0.01));
+            text.AppendLine(nameof(HeatStroke) + "=" + (HeatStroke * 0.01) + "degC");
+            text.AppendLine(nameof(VibrationInformation) + "=" + (VibrationInformation));
+            text.AppendLine(nameof(SIValue) + "=" + (SIValue));
+            text.AppendLine(nameof(PGA) + "=" + (PGA * 0.1) + "gal");
+            text.AppendLine(nameof(SeismicIntensity) + "=" + (SeismicIntensity * 0.001));
+            text.AppendLine(nameof(TemperatureFlag) + "=" + TemperatureFlag);
+            text.AppendLine(nameof(RelativeHumidityFlag) + "=" + RelativeHumidityFlag);
+            text.AppendLine(nameof(AmbientLightFlag) + "=" + AmbientLightFlag);
+            text.AppendLine(nameof(BarometricPressureFlag) + "=" + BarometricPressureFlag);
+            text.AppendLine(nameof(SoundNoiseFlag) + "=" + SoundNoiseFlag);
+            text.AppendLine(nameof(eTVOCFlag) + "=" + eTVOCFlag);
+            text.AppendLine(nameof(eCO2Flag) + "=" + eCO2Flag);
+            text.AppendLine(nameof(DiscomfortIndexFlag) + "=" + DiscomfortIndexFlag);
+            text.AppendLine(nameof(HeatStrokeFlag) + "=" + HeatStrokeFlag);
+            text.AppendLine(nameof(ValueFlag) + "=" + ValueFlag);
+            text.AppendLine(nameof(PGAFlag) + "=" + PGAFlag);
+            text.AppendLine(nameof(SeismicIntensityFlag) + "=" + SeismicIntensityFlag);
+            text.AppendLine("}");
+            return text.ToString();
         }
     }
 }
