@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace EnvironmentalSensor.USB
 {
@@ -29,8 +31,21 @@ namespace EnvironmentalSensor.USB
             var data = new List<byte>();
             data.Add((byte)Command);
             data.AddRange(BitConverter.GetBytes((ushort)Address));
-            data.AddRange(Data);
+            if (Data != null)
+            {
+                data.AddRange(Data);
+            }
             return data.ToArray();
+        }
+        public override string ToString()
+        {
+            var text = new StringBuilder();
+            text.AppendLine("{");
+            text.AppendLine($"{nameof(Command)}={Command},");
+            text.AppendLine($"{nameof(Address)}={Address},");
+            text.AppendLine($"{nameof(Data)}={Data?.ToDebugString() ?? "null"},");
+            text.AppendLine("}");
+            return text.ToString();
         }
     }
 }

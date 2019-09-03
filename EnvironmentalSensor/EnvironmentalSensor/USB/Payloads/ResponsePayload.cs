@@ -59,7 +59,7 @@ namespace EnvironmentalSensor.USB.Payloads
             }
             else
             {
-                throw new ArgumentOutOfRangeException($"address={address}");
+                return new ResponsePayload(buffer, 0);
             }
         }
     }

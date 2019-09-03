@@ -43,7 +43,8 @@ namespace DemoApp
                 connectButton.Enabled = false;
                 disconnectButton.Enabled = true;
                 latestDataLongGetButton.Enabled = true;
-                memoryDataLongGetButton.Enabled = true;
+                memoryDataLongGetButton.Enabled = false;
+                memoryIndexGetButton.Enabled = false;
             }
             else
             {
@@ -52,6 +53,7 @@ namespace DemoApp
                 disconnectButton.Enabled = false;
                 latestDataLongGetButton.Enabled = false;
                 memoryDataLongGetButton.Enabled = false;
+                memoryIndexGetButton.Enabled = false;
             }
         }
 

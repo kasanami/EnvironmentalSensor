@@ -43,12 +43,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.memoryIndexGetButton = new System.Windows.Forms.Button();
             this.memoryDataLongGetButton = new System.Windows.Forms.Button();
             this.latestDataLongGetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
-            this.memoryIndexGetButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -213,6 +213,18 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(788, 46);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
+            // memoryIndexGetButton
+            // 
+            this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.memoryIndexGetButton.Location = new System.Drawing.Point(527, 3);
+            this.memoryIndexGetButton.Name = "memoryIndexGetButton";
+            this.memoryIndexGetButton.Size = new System.Drawing.Size(258, 34);
+            this.memoryIndexGetButton.TabIndex = 6;
+            this.memoryIndexGetButton.Text = "保存データ数取得";
+            this.memoryIndexGetButton.UseVisualStyleBackColor = true;
+            this.memoryIndexGetButton.Click += new System.EventHandler(this.MemoryIndexGetButton_Click);
+            // 
             // memoryDataLongGetButton
             // 
             this.memoryDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -268,18 +280,6 @@
             // serialPort
             // 
             this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
-            // 
-            // memoryIndexGetButton
-            // 
-            this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.memoryIndexGetButton.Location = new System.Drawing.Point(527, 3);
-            this.memoryIndexGetButton.Name = "memoryIndexGetButton";
-            this.memoryIndexGetButton.Size = new System.Drawing.Size(258, 34);
-            this.memoryIndexGetButton.TabIndex = 6;
-            this.memoryIndexGetButton.Text = "保存データ数取得";
-            this.memoryIndexGetButton.UseVisualStyleBackColor = true;
-            this.memoryIndexGetButton.Click += new System.EventHandler(this.MemoryIndexGetButton_Click);
             // 
             // Form1
             // 
