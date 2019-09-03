@@ -4,6 +4,7 @@ using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
 using System.IO.Ports;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DemoApp
 {
@@ -29,6 +30,7 @@ namespace DemoApp
                 portsComboBox.SelectedIndex = 0;
                 selectedPort = ports[0];
             }
+            InitializeChartData();
             UpdateUI();
         }
 
@@ -130,6 +132,7 @@ namespace DemoApp
                     else if (frame.Payload is LatestDataLongResponsePayload)
                     {
                         var payload = frame.Payload as LatestDataLongResponsePayload;
+                        AddChartData(payload);
                     }
                     Console.WriteLine(frame.Payload.ToString());
                 }
@@ -197,5 +200,41 @@ namespace DemoApp
             }
         }
         #endregion イベント
+
+        #region Chart
+        Series temperatureSeries;
+        Series relativeHumiditySeries;
+        Series ambientLightSeries;
+        void InitializeChartData()
+        {
+            temperatureSeries = new Series("温度[℃]");
+            temperatureSeries.ChartType = SeriesChartType.Line;
+            relativeHumiditySeries = new Series("相対湿度[％]");
+            relativeHumiditySeries.ChartType = SeriesChartType.Line;
+            ambientLightSeries = new Series("環境光[ルクス]");
+            ambientLightSeries.ChartType = SeriesChartType.Line;
+            dataChart.Series.Clear();
+            dataChart.Series.Add(temperatureSeries);
+            dataChart.Series.Add(relativeHumiditySeries);
+            dataChart.Series.Add(ambientLightSeries);
+        }
+        void AddChartData(LatestDataLongResponsePayload payload)
+        {
+            Console.WriteLine(nameof(AddChartData));
+            if (dataChart.InvokeRequired)
+            {
+                var _delegate = new AddChartDataDelegate(AddChartData);
+                Invoke(_delegate, new object[] { payload });
+            }
+            else
+            {
+                var x = temperatureSeries.Points.Count;
+                temperatureSeries.Points.AddXY(x, payload.Temperature * 0.01);
+                relativeHumiditySeries.Points.AddXY(x, payload.RelativeHumidity* 0.01);
+                ambientLightSeries.Points.AddXY(x, payload.AmbientLight);
+            }
+        }
+        delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
+        #endregion Chart
     }
 }
