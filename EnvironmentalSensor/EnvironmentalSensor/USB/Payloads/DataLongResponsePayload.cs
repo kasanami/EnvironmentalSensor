@@ -27,7 +27,7 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <summary>
         /// 周囲光
         /// 範囲:0 to 30000
-        /// 単位:1 lx
+        /// 単位:1 lx(ルクス)
         /// </summary>
         public Int16 AmbientLight { get; protected set; }
         /// <summary>
