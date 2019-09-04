@@ -46,9 +46,11 @@
             this.memoryIndexGetButton = new System.Windows.Forms.Button();
             this.memoryDataLongGetButton = new System.Windows.Forms.Button();
             this.latestDataLongGetButton = new System.Windows.Forms.Button();
+            this.measurementCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this.measurementTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -152,7 +154,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label2.Location = new System.Drawing.Point(203, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(94, 40);
@@ -176,7 +178,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 40);
@@ -197,13 +199,15 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.Controls.Add(this.memoryIndexGetButton, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.memoryDataLongGetButton, 1, 0);
+            this.tableLayoutPanel3.ColumnCount = 4;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.Controls.Add(this.memoryIndexGetButton, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.memoryDataLongGetButton, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.latestDataLongGetButton, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.measurementCheckBox, 1, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 15);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -217,9 +221,9 @@
             // 
             this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.memoryIndexGetButton.Location = new System.Drawing.Point(527, 3);
+            this.memoryIndexGetButton.Location = new System.Drawing.Point(594, 3);
             this.memoryIndexGetButton.Name = "memoryIndexGetButton";
-            this.memoryIndexGetButton.Size = new System.Drawing.Size(258, 34);
+            this.memoryIndexGetButton.Size = new System.Drawing.Size(191, 34);
             this.memoryIndexGetButton.TabIndex = 6;
             this.memoryIndexGetButton.Text = "保存データ数取得";
             this.memoryIndexGetButton.UseVisualStyleBackColor = true;
@@ -229,9 +233,9 @@
             // 
             this.memoryDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.memoryDataLongGetButton.Location = new System.Drawing.Point(265, 3);
+            this.memoryDataLongGetButton.Location = new System.Drawing.Point(397, 3);
             this.memoryDataLongGetButton.Name = "memoryDataLongGetButton";
-            this.memoryDataLongGetButton.Size = new System.Drawing.Size(256, 34);
+            this.memoryDataLongGetButton.Size = new System.Drawing.Size(191, 34);
             this.memoryDataLongGetButton.TabIndex = 5;
             this.memoryDataLongGetButton.Text = "保存データ取得";
             this.memoryDataLongGetButton.UseVisualStyleBackColor = true;
@@ -243,11 +247,24 @@
             this.latestDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.latestDataLongGetButton.Location = new System.Drawing.Point(3, 3);
             this.latestDataLongGetButton.Name = "latestDataLongGetButton";
-            this.latestDataLongGetButton.Size = new System.Drawing.Size(256, 34);
+            this.latestDataLongGetButton.Size = new System.Drawing.Size(191, 34);
             this.latestDataLongGetButton.TabIndex = 4;
             this.latestDataLongGetButton.Text = "最新データ取得";
             this.latestDataLongGetButton.UseVisualStyleBackColor = true;
             this.latestDataLongGetButton.Click += new System.EventHandler(this.LatestDataLongGetButton_Click);
+            // 
+            // measurementCheckBox
+            // 
+            this.measurementCheckBox.AutoSize = true;
+            this.measurementCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.measurementCheckBox.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.measurementCheckBox.Location = new System.Drawing.Point(200, 3);
+            this.measurementCheckBox.Name = "measurementCheckBox";
+            this.measurementCheckBox.Size = new System.Drawing.Size(191, 34);
+            this.measurementCheckBox.TabIndex = 7;
+            this.measurementCheckBox.Text = "継続測定";
+            this.measurementCheckBox.UseVisualStyleBackColor = true;
+            this.measurementCheckBox.CheckedChanged += new System.EventHandler(this.MeasurementCheckBox_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -281,6 +298,11 @@
             // 
             this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
             // 
+            // measurementTimer
+            // 
+            this.measurementTimer.Interval = 1000;
+            this.measurementTimer.Tick += new System.EventHandler(this.MeasurementTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -295,6 +317,7 @@
             this.tableLayoutPanel2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).EndInit();
             this.ResumeLayout(false);
@@ -320,6 +343,8 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart dataChart;
         private System.Windows.Forms.Button memoryDataLongGetButton;
         private System.Windows.Forms.Button memoryIndexGetButton;
+        private System.Windows.Forms.Timer measurementTimer;
+        private System.Windows.Forms.CheckBox measurementCheckBox;
     }
 }
 

@@ -47,6 +47,7 @@ namespace DemoApp
                 latestDataLongGetButton.Enabled = true;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
+                measurementCheckBox.Enabled = true;
             }
             else
             {
@@ -56,6 +57,8 @@ namespace DemoApp
                 latestDataLongGetButton.Enabled = false;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
+                measurementCheckBox.Enabled = false;
+                measurementCheckBox.Checked = false;
             }
         }
 
@@ -241,5 +244,24 @@ namespace DemoApp
         }
         delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
         #endregion Chart
+
+        #region 継続測定
+        private void MeasurementTimer_Tick(object sender, EventArgs e)
+        {
+            Console.WriteLine("MeasurementTimer_Tick");
+        }
+
+        private void MeasurementCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (measurementCheckBox.Checked)
+            {
+                measurementTimer.Start();
+            }
+            else
+            {
+                measurementTimer.Stop();
+            }
+        }
+        #endregion 継続測定
     }
 }
