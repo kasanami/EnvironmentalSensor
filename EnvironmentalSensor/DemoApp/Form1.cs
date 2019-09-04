@@ -62,6 +62,28 @@ namespace DemoApp
             }
         }
 
+        #region センサー関係
+        /// <summary>
+        /// 最新データを取得
+        /// </summary>
+        void LatestDataLongGet()
+        {
+            if (serialPort.IsOpen)
+            {
+                var payload = new LatestDataLongCommandPayload();
+                var frame = new Frame(payload);
+                var buffer = frame.ToBytes();
+                Console.WriteLine(buffer.ToDebugString());
+                serialPort.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                Console.WriteLine("閉じてる");
+            }
+        }
+
+        #endregion センサー関係
+
         #region イベント
 
         /// <summary>
@@ -151,18 +173,7 @@ namespace DemoApp
         /// </summary>
         private void LatestDataLongGetButton_Click(object sender, EventArgs e)
         {
-            if (serialPort.IsOpen)
-            {
-                var payload = new LatestDataLongCommandPayload();
-                var frame = new Frame(payload);
-                var buffer = frame.ToBytes();
-                Console.WriteLine(buffer.ToDebugString());
-                serialPort.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                Console.WriteLine("閉じてる");
-            }
+            LatestDataLongGet();
         }
 
         /// <summary>
@@ -200,6 +211,27 @@ namespace DemoApp
             else
             {
                 Console.WriteLine("閉じてる");
+            }
+        }
+        /// <summary>
+        /// 継続測定のタイマー
+        /// </summary>
+        private void MeasurementTimer_Tick(object sender, EventArgs e)
+        {
+            LatestDataLongGet();
+        }
+        /// <summary>
+        /// 継続測定のチェックボックス
+        /// </summary>
+        private void MeasurementCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (measurementCheckBox.Checked)
+            {
+                measurementTimer.Start();
+            }
+            else
+            {
+                measurementTimer.Stop();
             }
         }
         #endregion イベント
@@ -244,24 +276,5 @@ namespace DemoApp
         }
         delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
         #endregion Chart
-
-        #region 継続測定
-        private void MeasurementTimer_Tick(object sender, EventArgs e)
-        {
-            Console.WriteLine("MeasurementTimer_Tick");
-        }
-
-        private void MeasurementCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (measurementCheckBox.Checked)
-            {
-                measurementTimer.Start();
-            }
-            else
-            {
-                measurementTimer.Stop();
-            }
-        }
-        #endregion 継続測定
     }
 }
