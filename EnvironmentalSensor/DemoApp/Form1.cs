@@ -31,6 +31,7 @@ namespace DemoApp
                 selectedPort = ports[0];
             }
             InitializeChartData();
+            InitializeLatestListData();
             UpdateUI();
         }
 
@@ -158,6 +159,7 @@ namespace DemoApp
                     {
                         var payload = frame.Payload as LatestDataLongResponsePayload;
                         AddChartData(payload);
+                        SetLatestListData(payload);
                     }
                     Console.WriteLine(frame.Payload.ToString());
                 }
@@ -236,7 +238,7 @@ namespace DemoApp
         }
         #endregion イベント
 
-        #region Chart
+        #region データ表示
         /// <summary>
         /// グラフの基準日時
         /// </summary>
@@ -275,6 +277,22 @@ namespace DemoApp
             }
         }
         delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
-        #endregion Chart
+
+        void InitializeLatestListData()
+        {
+            latestDataGridView.Columns.Clear();
+            latestDataGridView.Columns.Add("Name", "名前");
+            latestDataGridView.Columns.Add("Value", "値");
+            latestDataGridView.Rows.Add("温度[℃]", "");
+            latestDataGridView.Rows.Add("相対湿度[％]", "");
+            latestDataGridView.Rows.Add("環境光[ルクス]", "");
+        }
+        void SetLatestListData(LatestDataLongResponsePayload payload)
+        {
+            latestDataGridView[1, 0].Value = payload.Temperature * 0.01;
+            latestDataGridView[1, 1].Value = payload.RelativeHumidity * 0.01;
+            latestDataGridView[1, 2].Value = payload.AmbientLight;
+        }
+        #endregion データ表示
     }
 }

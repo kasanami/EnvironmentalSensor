@@ -48,7 +48,9 @@
             this.latestDataLongGetButton = new System.Windows.Forms.Button();
             this.measurementCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.latestDataGridView = new System.Windows.Forms.DataGridView();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.measurementTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
@@ -57,7 +59,9 @@
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.latestDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -268,7 +272,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.dataChart);
+            this.groupBox3.Controls.Add(this.tableLayoutPanel4);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 143);
             this.groupBox3.Name = "groupBox3";
@@ -277,6 +281,22 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "データ";
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel4.Controls.Add(this.dataChart, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.latestDataGridView, 1, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 15);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(788, 286);
+            this.tableLayoutPanel4.TabIndex = 1;
+            // 
             // dataChart
             // 
             chartArea1.Name = "ChartArea1";
@@ -284,15 +304,26 @@
             this.dataChart.Dock = System.Windows.Forms.DockStyle.Fill;
             legend1.Name = "Legend1";
             this.dataChart.Legends.Add(legend1);
-            this.dataChart.Location = new System.Drawing.Point(3, 15);
+            this.dataChart.Location = new System.Drawing.Point(3, 3);
             this.dataChart.Name = "dataChart";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.dataChart.Series.Add(series1);
-            this.dataChart.Size = new System.Drawing.Size(788, 286);
+            this.dataChart.Size = new System.Drawing.Size(582, 280);
             this.dataChart.TabIndex = 0;
             this.dataChart.Text = "chart1";
+            // 
+            // latestDataGridView
+            // 
+            this.latestDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.latestDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.latestDataGridView.Location = new System.Drawing.Point(591, 3);
+            this.latestDataGridView.Name = "latestDataGridView";
+            this.latestDataGridView.ReadOnly = true;
+            this.latestDataGridView.RowTemplate.Height = 21;
+            this.latestDataGridView.Size = new System.Drawing.Size(194, 280);
+            this.latestDataGridView.TabIndex = 1;
             // 
             // serialPort
             // 
@@ -319,7 +350,9 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.latestDataGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -345,6 +378,8 @@
         private System.Windows.Forms.Button memoryIndexGetButton;
         private System.Windows.Forms.Timer measurementTimer;
         private System.Windows.Forms.CheckBox measurementCheckBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.DataGridView latestDataGridView;
     }
 }
 
