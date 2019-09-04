@@ -270,7 +270,7 @@ namespace DemoApp
             else
             {
                 var now = DateTime.Now - StandardDateTime;
-                var x = now.TotalSeconds;
+                var x = Math.Round(now.TotalSeconds);
                 temperatureSeries.Points.AddXY(x, payload.Temperature * 0.01);
                 relativeHumiditySeries.Points.AddXY(x, payload.RelativeHumidity * 0.01);
                 ambientLightSeries.Points.AddXY(x, payload.AmbientLight);
