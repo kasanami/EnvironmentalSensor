@@ -202,6 +202,10 @@ namespace DemoApp
         #endregion イベント
 
         #region Chart
+        /// <summary>
+        /// グラフの基準日時
+        /// </summary>
+        DateTime StandardDateTime = DateTime.Now;
         Series temperatureSeries;
         Series relativeHumiditySeries;
         Series ambientLightSeries;
@@ -228,9 +232,10 @@ namespace DemoApp
             }
             else
             {
-                var x = temperatureSeries.Points.Count;
+                var now = DateTime.Now - StandardDateTime;
+                var x = now.TotalSeconds;
                 temperatureSeries.Points.AddXY(x, payload.Temperature * 0.01);
-                relativeHumiditySeries.Points.AddXY(x, payload.RelativeHumidity* 0.01);
+                relativeHumiditySeries.Points.AddXY(x, payload.RelativeHumidity * 0.01);
                 ambientLightSeries.Points.AddXY(x, payload.AmbientLight);
             }
         }
