@@ -34,7 +34,7 @@ namespace EnvironmentalSensor.USB.Payloads
             eCO2 = memoryStream.ReadInt16();
             DiscomfortIndex = memoryStream.ReadInt16();
             HeatStroke = memoryStream.ReadInt16();
-            VibrationInformation = (byte)memoryStream.ReadByte();
+            VibrationInformation = memoryStream.ReadUInt8();
             SIValue = memoryStream.ReadUInt16();
             PGA = memoryStream.ReadUInt16();
             SeismicIntensity = memoryStream.ReadUInt16();
@@ -47,9 +47,9 @@ namespace EnvironmentalSensor.USB.Payloads
             eCO2Flag = memoryStream.ReadUInt16();
             DiscomfortIndexFlag = memoryStream.ReadUInt16();
             HeatStrokeFlag = memoryStream.ReadUInt16();
-            ValueFlag = (byte)memoryStream.ReadByte();
-            PGAFlag = (byte)memoryStream.ReadByte();
-            SeismicIntensityFlag = (byte)memoryStream.ReadByte();
+            SIValueFlag = memoryStream.ReadUInt8();
+            PGAFlag = memoryStream.ReadUInt8();
+            SeismicIntensityFlag = memoryStream.ReadUInt8();
         }
 
         public override string ToString()
@@ -79,7 +79,7 @@ namespace EnvironmentalSensor.USB.Payloads
             text.AppendLine(nameof(eCO2Flag) + "=" + eCO2Flag.ToString());
             text.AppendLine(nameof(DiscomfortIndexFlag) + "=" + DiscomfortIndexFlag.ToString());
             text.AppendLine(nameof(HeatStrokeFlag) + "=" + HeatStrokeFlag.ToString());
-            text.AppendLine(nameof(ValueFlag) + "=" + ValueFlag.ToString());
+            text.AppendLine(nameof(SIValueFlag) + "=" + SIValueFlag.ToString());
             text.AppendLine(nameof(PGAFlag) + "=" + PGAFlag.ToString());
             text.AppendLine(nameof(SeismicIntensityFlag) + "=" + SeismicIntensityFlag.ToString());
             text.AppendLine("}");

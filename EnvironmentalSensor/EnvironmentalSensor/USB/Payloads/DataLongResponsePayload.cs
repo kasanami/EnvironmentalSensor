@@ -11,6 +11,9 @@ namespace EnvironmentalSensor.USB.Payloads
         public DataLongResponsePayload(byte[] buffer, int index) : base(buffer, index)
         {
         }
+        public DataLongResponsePayload()
+        {
+        }
         #region 各種センサの出力
         /// <summary>
         /// 気温
@@ -91,7 +94,7 @@ namespace EnvironmentalSensor.USB.Payloads
         public UInt16 eCO2Flag { get; protected set; }
         public UInt16 DiscomfortIndexFlag { get; protected set; }
         public UInt16 HeatStrokeFlag { get; protected set; }
-        public Byte ValueFlag { get; protected set; }
+        public Byte SIValueFlag { get; protected set; }
         public Byte PGAFlag { get; protected set; }
         public Byte SeismicIntensityFlag { get; protected set; }
         #endregion フラグ

@@ -7,6 +7,9 @@ namespace EnvironmentalSensor.USB.Payloads
     /// </summary>
     public class ResponsePayload : FramePayload
     {
+        protected ResponsePayload()
+        {
+        }
         /// <summary>
         /// 指定のバッファから初期化
         /// </summary>
