@@ -16,7 +16,7 @@ namespace EnvironmentalSensor.USB.Payloads
         /// 指定されたバッファから初期化
         /// </summary>
         /// <param name="buffer">Payloadの範囲のバッファ</param>
-        public ErrorResponsePayload(byte[] buffer, int index) : base(buffer, index)
+        public ErrorResponsePayload(byte[] buffer) : base(buffer)
         {
             Code = (ErrorCode)Data[0];
         }

@@ -14,31 +14,28 @@ namespace EnvironmentalSensor.USB.Payloads
         /// 指定のバッファから初期化
         /// </summary>
         /// <param name="buffer">Payloadが含まれるバッファ</param>
-        /// <param name="index">buffer内のPayloadの位置</param>
-        protected ResponsePayload(byte[] buffer, int index)
+        protected ResponsePayload(byte[] buffer)
         {
-            Command = (FrameCommand)buffer[index];
-            Address = (FrameAddress)BitConverter.ToUInt16(buffer, index + 1);
+            Command = (FrameCommand)buffer[0];
+            Address = (FrameAddress)BitConverter.ToUInt16(buffer, 1);
             Data = new byte[buffer.Length - 3];
-            Buffer.BlockCopy(buffer, index + 3, Data, 0, Data.Length);
+            Buffer.BlockCopy(buffer, 3, Data, 0, Data.Length);
         }
         /// <summary>
         /// 指定したバッファから、インスタンスを生成する。
         /// </summary>
         /// <param name="buffer">Payloadが含まれるバッファ</param>
-        /// <param name="index">buffer内のPayloadの位置</param>
-        /// <returns></returns>
-        public static ResponsePayload Create(byte[] buffer, int index)
+        public static ResponsePayload Create(byte[] buffer)
         {
-            var command = (FrameCommand)buffer[index];
-            var address = (FrameAddress)BitConverter.ToUInt16(buffer, index + 1);
+            var command = (FrameCommand)buffer[0];
+            var address = (FrameAddress)BitConverter.ToUInt16(buffer, 1);
             if (command.HasFlag(FrameCommand.Error))
             {
-                return new ErrorResponsePayload(buffer, index);
+                return new ErrorResponsePayload(buffer);
             }
             else if (address == FrameAddress.MemoryDataLong)
             {
-                return new MemoryDataLongResponsePayload(buffer, index);
+                return new MemoryDataLongResponsePayload(buffer);
             }
             else if (address == FrameAddress.MemoryDataShort)
             {
@@ -46,7 +43,7 @@ namespace EnvironmentalSensor.USB.Payloads
             }
             else if (address == FrameAddress.LatestDataLong)
             {
-                return new LatestDataLongResponsePayload(buffer, index);
+                return new LatestDataLongResponsePayload(buffer);
             }
             else if (address == FrameAddress.LatestDataShort)
             {
@@ -62,7 +59,7 @@ namespace EnvironmentalSensor.USB.Payloads
             }
             else
             {
-                return new ResponsePayload(buffer, 0);
+                return new ResponsePayload(buffer);
             }
         }
     }

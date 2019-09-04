@@ -26,7 +26,7 @@ namespace EnvironmentalSensor.USB.Payloads
         /// 指定されたバッファから初期化
         /// </summary>
         /// <param name="buffer">Payloadの範囲のバッファ</param>
-        public MemoryDataLongResponsePayload(byte[] buffer, int index) : base(buffer, index)
+        public MemoryDataLongResponsePayload(byte[] buffer) : base(buffer)
         {
             var memoryStream = new MemoryStream(Data, 0, Data.Length, false);
             MemoryIndex = memoryStream.ReadUInt32();

@@ -8,7 +8,7 @@ namespace EnvironmentalSensor.USB.Payloads
     /// </summary>
     public class DataLongResponsePayload : ResponsePayload
     {
-        public DataLongResponsePayload(byte[] buffer, int index) : base(buffer, index)
+        public DataLongResponsePayload(byte[] buffer) : base(buffer)
         {
         }
         public DataLongResponsePayload()

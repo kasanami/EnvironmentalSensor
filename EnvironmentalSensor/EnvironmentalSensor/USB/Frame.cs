@@ -74,7 +74,7 @@ namespace EnvironmentalSensor.USB
                     memoryStream.Seek(TopSize, SeekOrigin.Begin);// Payloadの位置に移動
                     var tempBuffer = new byte[Length - CRC16Size];
                     memoryStream.Read(tempBuffer, 0, tempBuffer.Length);
-                    Payload = ResponsePayload.Create(tempBuffer, 0);
+                    Payload = ResponsePayload.Create(tempBuffer);
                 }
             }
         }
