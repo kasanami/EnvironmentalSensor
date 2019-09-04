@@ -148,18 +148,18 @@ namespace SimpleDataLogger
                 $"{now.ToString("yyyy/MM/dd hh:mm:ss")}," +
                 $"{payload.SequenceNumber}," +
                 $"{payload.Temperature * 0.01}," +
-                $"{payload.RelativeHumidity * 0.01}" +
+                $"{payload.RelativeHumidity * 0.01}," +
                 $"{payload.AmbientLight}," +
                 $"{payload.BarometricPressure * 0.001}," +
-                $"{payload.SoundNoise}," +
+                $"{payload.SoundNoise * 0.01}," +
                 $"{payload.eTVOC}," +
                 $"{payload.eCO2}," +
-                $"{payload.DiscomfortIndex}," +
-                $"{payload.HeatStroke}," +
+                $"{payload.DiscomfortIndex * 0.01}," +
+                $"{payload.HeatStroke * 0.01}," +
                 $"{payload.VibrationInformation}," +
-                $"{payload.SIValue}," +
-                $"{payload.PGA}," +
-                $"{payload.SeismicIntensity}," +
+                $"{payload.SIValue * 0.1}," +
+                $"{payload.PGA * 0.1}," +
+                $"{payload.SeismicIntensity * 0.001}," +
                 $"{payload.TemperatureFlag}," +
                 $"{payload.RelativeHumidityFlag}," +
                 $"{payload.AmbientLightFlag}," +
