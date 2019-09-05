@@ -77,8 +77,8 @@ namespace SimpleDataLogger
             var now = DateTime.Now;
             byte[] buffer = new byte[1024];
             var readSize = serialPort.Read(buffer, 0, buffer.Length);
-            Console.WriteLine("DataReceived");
-            Console.WriteLine($"readSize={readSize}");
+            //Console.WriteLine("DataReceived");
+            //Console.WriteLine($"readSize={readSize}");
             if (readSize > 0)
             {
                 try
