@@ -2,6 +2,7 @@
 using EnvironmentalSensor.USB.Payloads;
 using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -239,25 +240,59 @@ namespace DemoApp
         #endregion イベント
 
         #region データ表示
+        enum DataId : int
+        {
+            SequenceNumber,
+            Temperature,
+            RelativeHumidity,
+            AmbientLight,
+            BarometricPressure,
+            SoundNoise,
+            eTVOC,
+            eCO2,
+            DiscomfortIndex,
+            HeatStroke,
+            VibrationInformation,
+            SIValue,
+            PGA,
+            SeismicIntensity,
+        }
+        Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
+        {
+            {DataId.SequenceNumber, "シーケンス番号[x0.1]"},
+            {DataId.Temperature, "温度[℃]"},
+            {DataId.RelativeHumidity, "相対湿度[％]"},
+            {DataId.AmbientLight, "環境光[ルクス]"},
+            {DataId.BarometricPressure, "気圧[hPa]"},
+            {DataId.SoundNoise, "雑音[dB]"},
+            {DataId.eTVOC, "総揮発性有機化学物量相当値[センチppd]"},
+            {DataId.eCO2, "二酸化炭素換算の数値[センチppm]"},
+            {DataId.DiscomfortIndex, "不快指数"},
+            {DataId.HeatStroke, "熱中症警戒度[℃]"},
+            {DataId.VibrationInformation, "振動情報"},
+            {DataId.SIValue, "スペクトル強度[kine]"},
+            {DataId.PGA, "PGA"},
+            {DataId.SeismicIntensity, "SeismicIntensity"},
+        };
         /// <summary>
         /// グラフの基準日時
         /// </summary>
         DateTime StandardDateTime = DateTime.Now;
-        Series temperatureSeries;
-        Series relativeHumiditySeries;
-        Series ambientLightSeries;
+        Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
+        const int ChartPointsMaxCount = 2000;
         void InitializeChartData()
         {
-            temperatureSeries = new Series("温度[℃]");
-            temperatureSeries.ChartType = SeriesChartType.Line;
-            relativeHumiditySeries = new Series("相対湿度[％]");
-            relativeHumiditySeries.ChartType = SeriesChartType.Line;
-            ambientLightSeries = new Series("環境光[ルクス]");
-            ambientLightSeries.ChartType = SeriesChartType.Line;
             dataChart.Series.Clear();
-            dataChart.Series.Add(temperatureSeries);
-            dataChart.Series.Add(relativeHumiditySeries);
-            dataChart.Series.Add(ambientLightSeries);
+            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            {
+                var dataName = DataNames[dataId];
+                var series = new Series(dataName);
+                series.ChartType = SeriesChartType.Line;
+                series.BorderWidth = 2;
+                dataChart.Series.Add(series);
+
+                dataSeries.Add(dataId, series);
+            }
         }
         void AddChartData(LatestDataLongResponsePayload payload)
         {
@@ -271,27 +306,53 @@ namespace DemoApp
             {
                 var now = DateTime.Now - StandardDateTime;
                 var x = Math.Round(now.TotalSeconds);
-                temperatureSeries.Points.AddXY(x, payload.Temperature * 0.01);
-                relativeHumiditySeries.Points.AddXY(x, payload.RelativeHumidity * 0.01);
-                ambientLightSeries.Points.AddXY(x, payload.AmbientLight);
+                foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+                {
+                    if (dataSeries[dataId].Points.Count > ChartPointsMaxCount)
+                    {
+                        dataSeries[dataId].Points.RemoveAt(0);
+                    }
+                    dataSeries[dataId].Points.AddXY(x, GetDataFromId(payload, dataId));
+                }
             }
         }
         delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
+
+        static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
+        {
+            if (dataId == DataId.SequenceNumber) return payload.SequenceNumber * 0.1;
+            if (dataId == DataId.Temperature) return payload.Temperature * payload.TemperatureUnit;
+            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity * payload.RelativeHumidityUnit;
+            if (dataId == DataId.AmbientLight) return payload.AmbientLight;
+            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure * payload.BarometricPressureUnit;
+            if (dataId == DataId.SoundNoise) return payload.SoundNoise * payload.SoundNoiseUnit;
+            if (dataId == DataId.eTVOC) return payload.eTVOC * 0.01;
+            if (dataId == DataId.eCO2) return payload.eCO2 * 0.01;
+            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex * payload.DiscomfortIndexUnit;
+            if (dataId == DataId.HeatStroke) return payload.HeatStroke * payload.HeatStrokeUnit;
+            if (dataId == DataId.VibrationInformation) return payload.VibrationInformation;
+            if (dataId == DataId.SIValue) return payload.SIValue * payload.SIValueUnit;
+            if (dataId == DataId.PGA) return payload.PGA * payload.PGAUnit;
+            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity * payload.SeismicIntensityUnit;
+            throw new NotSupportedException($"{nameof(dataId)}={dataId}");
+        }
 
         void InitializeLatestListData()
         {
             latestDataGridView.Columns.Clear();
             latestDataGridView.Columns.Add("Name", "名前");
             latestDataGridView.Columns.Add("Value", "値");
-            latestDataGridView.Rows.Add("温度[℃]", "");
-            latestDataGridView.Rows.Add("相対湿度[％]", "");
-            latestDataGridView.Rows.Add("環境光[ルクス]", "");
+            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            {
+                latestDataGridView.Rows.Add(DataNames[dataId], "");
+            }
         }
         void SetLatestListData(LatestDataLongResponsePayload payload)
         {
-            latestDataGridView[1, 0].Value = payload.Temperature * 0.01;
-            latestDataGridView[1, 1].Value = payload.RelativeHumidity * 0.01;
-            latestDataGridView[1, 2].Value = payload.AmbientLight;
+            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            {
+                latestDataGridView[1, (int)dataId].Value = GetDataFromId(payload, dataId);
+            }
         }
         #endregion データ表示
     }
