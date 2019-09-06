@@ -49,13 +49,36 @@ namespace EnvironmentalSensor.USB
             const int CRC16Size = 2;
             using (var memoryStream = new MemoryStream(buffer, index, count, false))
             {
+                // データ長チェック
+                {
+                    var requestedLength = TopSize + CRC16Size;
+                    if (count < requestedLength)
+                    {
+                        throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(count)}={count} {nameof(requestedLength)}={requestedLength }");
+                    }
+                }
                 Header = memoryStream.ReadUInt16();
+#if DEBUG
+                Console.WriteLine($"{nameof(Header)}={Header.ToString("X4")}");
+#endif
                 if (Header != MagicNumber)
                 {
                     // 対応してるデータではない
                     throw new NotSupportedException($"Header={Header.ToString("X4")}");
                 }
                 Length = memoryStream.ReadUInt16();
+#if DEBUG
+                Console.WriteLine($"{nameof(Length)}={Length}");
+#endif
+                // データ長チェック
+                {
+                    // 本来あるべき全体のサイズ
+                    var requestedLength = Length + TopSize;
+                    if (count < requestedLength)
+                    {
+                        throw new DamagedDataException($"データ長が短い。{nameof(count)}={count} {nameof(requestedLength)}={requestedLength}");
+                    }
+                }
                 // CRCチェック
                 {
                     memoryStream.Seek(0, SeekOrigin.Begin);// 最初に戻る
@@ -63,10 +86,13 @@ namespace EnvironmentalSensor.USB
                     memoryStream.Read(tempBuffer, 0, tempBuffer.Length);
                     var computedCRC16 = crc16.ComputeHash(tempBuffer);
                     CRC16 = memoryStream.ReadUInt16();
+#if DEBUG
+                    Console.WriteLine($"{nameof(CRC16)}={CRC16}");
+#endif
                     if (CRC16 != computedCRC16)
                     {
                         // CRCの結果 データ破損
-                        throw new DamagedDataException($"{nameof(CRC16)}={CRC16.ToString("X4")} {nameof(computedCRC16)}={computedCRC16.ToString("X4")}");
+                        throw new DamagedDataException($"CRC値の不一致。{nameof(CRC16)}={CRC16.ToString("X4")} {nameof(computedCRC16)}={computedCRC16.ToString("X4")}");
                     }
                 }
                 // Payload読み込み
