@@ -1,4 +1,5 @@
-﻿using EnvironmentalSensor.USB;
+﻿using EnvironmentalSensor;
+using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,21 @@ namespace SimpleDataLogger
 {
     class Program
     {
+        const string DateTimeFormat = "yyyy/MM/dd HH:mm:ss";
+
         static SerialPort serialPort = new SerialPort();
+        static byte[] readBuffer = new byte[serialPort.ReadBufferSize];
         static StreamWriter logStream;
+
+        [Flags]
+        enum LogMode : uint
+        {
+            Error = 0x0000_0001,
+            LatestDataLong = 0x0000_0002,
+            DamagedData = 0x8000_0000,
+            All = 0xFFFF_FFFF,
+        }
+        static LogMode logMode = LogMode.All;
 
         static void Main(string[] args)
         {
@@ -75,15 +89,16 @@ namespace SimpleDataLogger
         private static void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             var now = DateTime.Now;
-            byte[] buffer = new byte[1024];
-            var readSize = serialPort.Read(buffer, 0, buffer.Length);
-            //Console.WriteLine("DataReceived");
-            //Console.WriteLine($"readSize={readSize}");
+            var readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
+#if DEBUG
+            Console.WriteLine("DataReceived");
+            Console.WriteLine($"readSize={readSize}");
+#endif
             if (readSize > 0)
             {
                 try
                 {
-                    var frame = new Frame(buffer, 0, readSize);
+                    var frame = new Frame(readBuffer, 0, readSize);
 
                     if (frame.Payload is ErrorResponsePayload)
                     {
@@ -96,9 +111,19 @@ namespace SimpleDataLogger
                         Log(now, payload);
                     }
                 }
+                catch (NotSupportedException)
+                {
+                    // 無視
+                }
+                catch (DamagedDataException ex)
+                {
+                    LogDamagedData(now, ex.Message, readBuffer, readSize);
+                }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                     Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                 }
             }
         }
@@ -106,6 +131,18 @@ namespace SimpleDataLogger
         {
             logStream.WriteLine(
                 $"日時," +
+                $"DamagedData," +
+                $"メッセージ," +
+                $"データの16進数表記,"
+                );
+            logStream.WriteLine(
+                $"日時," +
+                $"Error," +
+                $"Code,"
+                );
+            logStream.WriteLine(
+                $"日時," +
+                $"LatestDataLong," +
                 $"SequenceNumber," +
                 $"気温[℃]," +
                 $"相対湿度[％]," +
@@ -134,18 +171,45 @@ namespace SimpleDataLogger
                 $"SeismicIntensityFlag,"
                 );
         }
+        static void LogDamagedData(DateTime now, string message, byte[] readBuffer, int readSize)
+        {
+            if (logMode.HasFlag(LogMode.DamagedData) == false)
+            {
+                return;
+            }
+            var readBufferText = new StringBuilder();
+            for (int i = 0; i < readSize; i++)
+            {
+                readBufferText.Append(readBuffer[i].ToString("X2") + " ");
+            }
+            logStream.WriteLine(
+                $"{now.ToString(DateTimeFormat)}," +
+                $"DamagedData," +
+                $"{message}," +
+                $"{readBufferText},"
+                );
+        }
         static void Log(DateTime now, ErrorResponsePayload payload)
         {
+            if (logMode.HasFlag(LogMode.Error) == false)
+            {
+                return;
+            }
             logStream.WriteLine(
-                $"{now.ToString("yyyy/MM/dd hh:mm:ss")}," +
+                $"{now.ToString(DateTimeFormat)}," +
                 $"Error," +
                 $"{payload.Code},"
                 );
         }
         static void Log(DateTime now, LatestDataLongResponsePayload payload)
         {
+            if (logMode.HasFlag(LogMode.LatestDataLong) == false)
+            {
+                return;
+            }
             logStream.WriteLine(
-                $"{now.ToString("yyyy/MM/dd hh:mm:ss")}," +
+                $"{now.ToString(DateTimeFormat)}," +
+                $"LatestDataLong," +
                 $"{payload.SequenceNumber}," +
                 $"{payload.Temperature * 0.01}," +
                 $"{payload.RelativeHumidity * 0.01}," +
