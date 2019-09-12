@@ -285,7 +285,7 @@
             // 
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.tableLayoutPanel4.Controls.Add(this.dataChart, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.latestDataGridView, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -293,7 +293,6 @@
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(788, 286);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
@@ -310,7 +309,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.dataChart.Series.Add(series1);
-            this.dataChart.Size = new System.Drawing.Size(582, 280);
+            this.dataChart.Size = new System.Drawing.Size(482, 280);
             this.dataChart.TabIndex = 0;
             this.dataChart.Text = "chart1";
             // 
@@ -318,11 +317,11 @@
             // 
             this.latestDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.latestDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.latestDataGridView.Location = new System.Drawing.Point(591, 3);
+            this.latestDataGridView.Location = new System.Drawing.Point(491, 3);
             this.latestDataGridView.Name = "latestDataGridView";
             this.latestDataGridView.ReadOnly = true;
             this.latestDataGridView.RowTemplate.Height = 21;
-            this.latestDataGridView.Size = new System.Drawing.Size(194, 280);
+            this.latestDataGridView.Size = new System.Drawing.Size(294, 280);
             this.latestDataGridView.TabIndex = 1;
             // 
             // serialPort
@@ -331,7 +330,7 @@
             // 
             // measurementTimer
             // 
-            this.measurementTimer.Interval = 1000;
+            this.measurementTimer.Interval = 5000;
             this.measurementTimer.Tick += new System.EventHandler(this.MeasurementTimer_Tick);
             // 
             // Form1

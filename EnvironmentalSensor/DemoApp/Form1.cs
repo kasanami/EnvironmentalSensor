@@ -3,6 +3,7 @@ using EnvironmentalSensor.USB.Payloads;
 using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO.Ports;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -264,22 +265,39 @@ namespace DemoApp
             {DataId.RelativeHumidity, "相対湿度[％]"},
             {DataId.AmbientLight, "環境光[ルクス]"},
             {DataId.BarometricPressure, "気圧[hPa]"},
-            {DataId.SoundNoise, "雑音[dB]"},
-            {DataId.eTVOC, "総揮発性有機化学物量相当値[センチppd]"},
-            {DataId.eCO2, "二酸化炭素換算の数値[センチppm]"},
+            {DataId.SoundNoise, "雑音[dBx100]"},
+            {DataId.eTVOC, "総揮発性有機化学物量相当値[ppd x0.01]"},
+            {DataId.eCO2, "二酸化炭素換算の数値[ppm x0.1]"},
             {DataId.DiscomfortIndex, "不快指数"},
             {DataId.HeatStroke, "熱中症警戒度[℃]"},
-            {DataId.VibrationInformation, "振動情報"},
+            {DataId.VibrationInformation, "振動情報[x0.1]"},
             {DataId.SIValue, "スペクトル強度[kine]"},
             {DataId.PGA, "PGA"},
             {DataId.SeismicIntensity, "SeismicIntensity"},
+        };
+        Dictionary<DataId, Color> DataColors = new Dictionary<DataId, Color>()
+        {
+            {DataId.SequenceNumber, Color.Black},
+            {DataId.Temperature, Color.Red},
+            {DataId.RelativeHumidity, Color.OrangeRed},
+            {DataId.AmbientLight, Color.Yellow},
+            {DataId.BarometricPressure, Color.GreenYellow},
+            {DataId.SoundNoise, Color.Green},
+            {DataId.eTVOC, Color.Cyan},
+            {DataId.eCO2, Color.DarkCyan},
+            {DataId.DiscomfortIndex, Color.DarkRed},
+            {DataId.HeatStroke, Color.PaleVioletRed},
+            {DataId.VibrationInformation, Color.Blue},
+            {DataId.SIValue, Color.Blue},
+            {DataId.PGA, Color.Blue},
+            {DataId.SeismicIntensity, Color.Blue},
         };
         /// <summary>
         /// グラフの基準日時
         /// </summary>
         DateTime StandardDateTime = DateTime.Now;
         Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
-        const int ChartPointsMaxCount = 2000;
+        const int ChartPointsMaxCount = 20;
         void InitializeChartData()
         {
             dataChart.Series.Clear();
@@ -288,11 +306,20 @@ namespace DemoApp
                 var dataName = DataNames[dataId];
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
-                series.BorderWidth = 2;
+                if (dataId == DataId.SequenceNumber)
+                {
+                    series.BorderWidth = 1;
+                }
+                else
+                {
+                    series.BorderWidth = 2;
+                }
+                series.Color = DataColors[dataId];
                 dataChart.Series.Add(series);
 
                 dataSeries.Add(dataId, series);
             }
+            dataChart.Font = new Font(dataChart.Font.Name, 18);
         }
         void AddChartData(LatestDataLongResponsePayload payload)
         {
@@ -306,13 +333,11 @@ namespace DemoApp
             {
                 var now = DateTime.Now - StandardDateTime;
                 var x = Math.Round(now.TotalSeconds);
+                dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
                 foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
                 {
-                    if (dataSeries[dataId].Points.Count > ChartPointsMaxCount)
-                    {
-                        dataSeries[dataId].Points.RemoveAt(0);
-                    }
-                    dataSeries[dataId].Points.AddXY(x, GetDataFromId(payload, dataId));
+                    var points = dataSeries[dataId].Points;
+                    points.AddXY(x, GetDataFromId(payload, dataId));
                 }
             }
         }
@@ -325,12 +350,12 @@ namespace DemoApp
             if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity * payload.RelativeHumidityUnit;
             if (dataId == DataId.AmbientLight) return payload.AmbientLight;
             if (dataId == DataId.BarometricPressure) return payload.BarometricPressure * payload.BarometricPressureUnit;
-            if (dataId == DataId.SoundNoise) return payload.SoundNoise * payload.SoundNoiseUnit;
+            if (dataId == DataId.SoundNoise) return payload.SoundNoise * payload.SoundNoiseUnit * 100;
             if (dataId == DataId.eTVOC) return payload.eTVOC * 0.01;
-            if (dataId == DataId.eCO2) return payload.eCO2 * 0.01;
+            if (dataId == DataId.eCO2) return payload.eCO2 * 0.1;
             if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex * payload.DiscomfortIndexUnit;
             if (dataId == DataId.HeatStroke) return payload.HeatStroke * payload.HeatStrokeUnit;
-            if (dataId == DataId.VibrationInformation) return payload.VibrationInformation;
+            if (dataId == DataId.VibrationInformation) return payload.VibrationInformation * 0.1;
             if (dataId == DataId.SIValue) return payload.SIValue * payload.SIValueUnit;
             if (dataId == DataId.PGA) return payload.PGA * payload.PGAUnit;
             if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity * payload.SeismicIntensityUnit;
