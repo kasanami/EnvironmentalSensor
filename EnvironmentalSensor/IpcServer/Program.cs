@@ -1,17 +1,18 @@
 ﻿using EnvironmentalSensor;
+using EnvironmentalSensor.Ipc;
 using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using Ksnm.Utilities;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Ports;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IpcServer
 {
+    /// <summary>
+    /// サーバープログラム
+    /// </summary>
     class Program
     {
         const string DateTimeFormat = "yyyy/MM/dd HH:mm:ss";
@@ -19,17 +20,19 @@ namespace IpcServer
         static SerialPort serialPort = new SerialPort();
         static byte[] readBuffer = new byte[serialPort.ReadBufferSize];
 
-        static CSVLogger csvLogger = null;
+        static Server server = new Server();
+
+        static CsvLogger csvLogger = null;
 
         [Flags]
-        enum LogMode : uint
+        enum LogFlags : uint
         {
             Error = 0x0000_0001,
             LatestDataLong = 0x0000_0002,
             DamagedData = 0x8000_0000,
             All = 0xFFFF_FFFF,
         }
-        static LogMode logMode = LogMode.All;
+        static LogFlags logMode = LogFlags.All;
 
         static void Main(string[] args)
         {
@@ -45,7 +48,7 @@ namespace IpcServer
                     break;
                 }
             }
-            //
+            // シリアルポートを設定して通信を開始
             {
                 serialPort.DataReceived += SerialPort_DataReceived;
                 /// マニュアル:4.1. Communication specification
@@ -59,7 +62,7 @@ namespace IpcServer
             }
             // 
             {
-                csvLogger = new CSVLogger($"{DateTime.Now.ToString("yyyyMMdd")}.csv");
+                csvLogger = new CsvLogger($"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv");
                 LogHeader();
                 EnvironmentalSensorCommunication();
                 Console.WriteLine("終了するにはなにかキーを入力");
@@ -68,7 +71,9 @@ namespace IpcServer
             // 終了
             serialPort.Close();
         }
-
+        /// <summary>
+        /// 定期的にデータを取得
+        /// </summary>
         static async void EnvironmentalSensorCommunication()
         {
             while (true)
@@ -87,13 +92,18 @@ namespace IpcServer
                 await Task.Delay(1000);
             }
         }
-
         /// <summary>
         /// データが受信された
         /// </summary>
         private static void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             var now = DateTime.Now;
+            var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
+            if (logFilePath != csvLogger.FilePath)
+            {
+                // 日付が変わったらファイル名変更
+                csvLogger = new CsvLogger(logFilePath);
+            }
             var readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
 #if DEBUG
             Console.WriteLine("DataReceived");
@@ -104,7 +114,9 @@ namespace IpcServer
                 try
                 {
                     var frame = new Frame(readBuffer, 0, readSize);
-
+                    // リモートオブジェクトに設定
+                    server.RemoteObject.Set(frame.Payload);
+                    // ログに出力
                     if (frame.Payload is ErrorResponsePayload)
                     {
                         var payload = frame.Payload as ErrorResponsePayload;
@@ -178,7 +190,7 @@ namespace IpcServer
         }
         static void LogDamagedData(DateTime now, string message, byte[] readBuffer, int readSize)
         {
-            if (logMode.HasFlag(LogMode.DamagedData) == false)
+            if (logMode.HasFlag(LogFlags.DamagedData) == false)
             {
                 return;
             }
@@ -196,7 +208,7 @@ namespace IpcServer
         }
         static void Log(DateTime now, ErrorResponsePayload payload)
         {
-            if (logMode.HasFlag(LogMode.Error) == false)
+            if (logMode.HasFlag(LogFlags.Error) == false)
             {
                 return;
             }
@@ -208,7 +220,7 @@ namespace IpcServer
         }
         static void Log(DateTime now, LatestDataLongResponsePayload payload)
         {
-            if (logMode.HasFlag(LogMode.LatestDataLong) == false)
+            if (logMode.HasFlag(LogFlags.LatestDataLong) == false)
             {
                 return;
             }
