@@ -8,7 +8,7 @@ namespace EnvironmentalSensor.USB
     /// <summary>
     /// 付加的情報を除いた、データ本体
     /// </summary>
-    public abstract class FramePayload
+    public abstract class FramePayload : MarshalByRefObject
     {
         /// <summary>
         /// Read, Write を指定する
