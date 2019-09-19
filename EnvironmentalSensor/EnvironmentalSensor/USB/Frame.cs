@@ -48,6 +48,7 @@ namespace EnvironmentalSensor.USB
             const int TopSize = 4;
             const int CRC16Size = 2;
             using (var memoryStream = new MemoryStream(buffer, index, count, false))
+            using (var binaryReader = new BinaryReader(memoryStream))
             {
                 // データ長チェック
                 {
@@ -57,7 +58,7 @@ namespace EnvironmentalSensor.USB
                         throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(count)}={count} {nameof(requestedLength)}={requestedLength }");
                     }
                 }
-                Header = memoryStream.ReadUInt16();
+                Header = binaryReader.ReadUInt16();
 #if DEBUG
                 Console.WriteLine($"{nameof(Header)}={Header.ToString("X4")}");
 #endif
@@ -66,7 +67,7 @@ namespace EnvironmentalSensor.USB
                     // 対応してるデータではない
                     throw new NotSupportedException($"Header={Header.ToString("X4")}");
                 }
-                Length = memoryStream.ReadUInt16();
+                Length = binaryReader.ReadUInt16();
 #if DEBUG
                 Console.WriteLine($"{nameof(Length)}={Length}");
 #endif
@@ -85,7 +86,7 @@ namespace EnvironmentalSensor.USB
                     var tempBuffer = new byte[Length + TopSize - CRC16Size];
                     memoryStream.Read(tempBuffer, 0, tempBuffer.Length);
                     var computedCRC16 = crc16.ComputeHash(tempBuffer);
-                    CRC16 = memoryStream.ReadUInt16();
+                    CRC16 = binaryReader.ReadUInt16();
 #if DEBUG
                     Console.WriteLine($"{nameof(CRC16)}={CRC16}");
 #endif
