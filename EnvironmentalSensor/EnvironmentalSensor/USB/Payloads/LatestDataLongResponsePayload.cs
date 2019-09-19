@@ -23,33 +23,36 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <param name="buffer">Payloadの範囲のバッファ</param>
         public LatestDataLongResponsePayload(byte[] buffer) : base(buffer)
         {
-            var memoryStream = new MemoryStream(Data, 0, Data.Length, false);
-            SequenceNumber = memoryStream.ReadUInt8();
-            Temperature = memoryStream.ReadInt16();
-            RelativeHumidity = memoryStream.ReadInt16();
-            AmbientLight = memoryStream.ReadInt16();
-            BarometricPressure = memoryStream.ReadInt16();
-            SoundNoise = memoryStream.ReadInt16();
-            eTVOC = memoryStream.ReadInt16();
-            eCO2 = memoryStream.ReadInt16();
-            DiscomfortIndex = memoryStream.ReadInt16();
-            HeatStroke = memoryStream.ReadInt16();
-            VibrationInformation = memoryStream.ReadUInt8();
-            SIValue = memoryStream.ReadUInt16();
-            PGA = memoryStream.ReadUInt16();
-            SeismicIntensity = memoryStream.ReadUInt16();
-            TemperatureFlag = memoryStream.ReadUInt16();
-            RelativeHumidityFlag = memoryStream.ReadUInt16();
-            AmbientLightFlag = memoryStream.ReadUInt16();
-            BarometricPressureFlag = memoryStream.ReadUInt16();
-            SoundNoiseFlag = memoryStream.ReadUInt16();
-            eTVOCFlag = memoryStream.ReadUInt16();
-            eCO2Flag = memoryStream.ReadUInt16();
-            DiscomfortIndexFlag = memoryStream.ReadUInt16();
-            HeatStrokeFlag = memoryStream.ReadUInt16();
-            SIValueFlag = memoryStream.ReadUInt8();
-            PGAFlag = memoryStream.ReadUInt8();
-            SeismicIntensityFlag = memoryStream.ReadUInt8();
+            using (var memoryStream = new MemoryStream(Data, 0, Data.Length, false))
+            using (var binaryReader = new BinaryReader(memoryStream))
+            {
+                SequenceNumber = binaryReader.ReadByte();
+                Temperature = binaryReader.ReadInt16();
+                RelativeHumidity = binaryReader.ReadInt16();
+                AmbientLight = binaryReader.ReadInt16();
+                BarometricPressure = binaryReader.ReadInt16();
+                SoundNoise = binaryReader.ReadInt16();
+                eTVOC = binaryReader.ReadInt16();
+                eCO2 = binaryReader.ReadInt16();
+                DiscomfortIndex = binaryReader.ReadInt16();
+                HeatStroke = binaryReader.ReadInt16();
+                VibrationInformation = binaryReader.ReadByte();
+                SIValue = binaryReader.ReadUInt16();
+                PGA = binaryReader.ReadUInt16();
+                SeismicIntensity = binaryReader.ReadUInt16();
+                TemperatureFlag = binaryReader.ReadUInt16();
+                RelativeHumidityFlag = binaryReader.ReadUInt16();
+                AmbientLightFlag = binaryReader.ReadUInt16();
+                BarometricPressureFlag = binaryReader.ReadUInt16();
+                SoundNoiseFlag = binaryReader.ReadUInt16();
+                eTVOCFlag = binaryReader.ReadUInt16();
+                eCO2Flag = binaryReader.ReadUInt16();
+                DiscomfortIndexFlag = binaryReader.ReadUInt16();
+                HeatStrokeFlag = binaryReader.ReadUInt16();
+                SIValueFlag = binaryReader.ReadByte();
+                PGAFlag = binaryReader.ReadByte();
+                SeismicIntensityFlag = binaryReader.ReadByte();
+            }
         }
 
         public override string ToString()
