@@ -51,6 +51,10 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.latestDataGridView = new System.Windows.Forms.DataGridView();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.dataFromServerRadioButton = new System.Windows.Forms.RadioButton();
+            this.dataFromSensorRadioButton = new System.Windows.Forms.RadioButton();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.measurementTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
@@ -62,32 +66,36 @@
             this.tableLayoutPanel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.latestDataGridView)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.groupBox2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.groupBox3, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox2, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox3, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox4, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1016, 711);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tableLayoutPanel2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Location = new System.Drawing.Point(3, 73);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(794, 64);
+            this.groupBox1.Size = new System.Drawing.Size(1010, 64);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "接続";
@@ -115,7 +123,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(788, 46);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1004, 46);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // disconnectButton
@@ -194,9 +202,9 @@
             // 
             this.groupBox2.Controls.Add(this.tableLayoutPanel3);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 73);
+            this.groupBox2.Location = new System.Drawing.Point(3, 143);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(794, 64);
+            this.groupBox2.Size = new System.Drawing.Size(1010, 64);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "制御";
@@ -218,16 +226,16 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(788, 46);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1004, 46);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // memoryIndexGetButton
             // 
             this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.memoryIndexGetButton.Location = new System.Drawing.Point(594, 3);
+            this.memoryIndexGetButton.Location = new System.Drawing.Point(756, 3);
             this.memoryIndexGetButton.Name = "memoryIndexGetButton";
-            this.memoryIndexGetButton.Size = new System.Drawing.Size(191, 34);
+            this.memoryIndexGetButton.Size = new System.Drawing.Size(245, 34);
             this.memoryIndexGetButton.TabIndex = 6;
             this.memoryIndexGetButton.Text = "保存データ数取得";
             this.memoryIndexGetButton.UseVisualStyleBackColor = true;
@@ -237,9 +245,9 @@
             // 
             this.memoryDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.memoryDataLongGetButton.Location = new System.Drawing.Point(397, 3);
+            this.memoryDataLongGetButton.Location = new System.Drawing.Point(505, 3);
             this.memoryDataLongGetButton.Name = "memoryDataLongGetButton";
-            this.memoryDataLongGetButton.Size = new System.Drawing.Size(191, 34);
+            this.memoryDataLongGetButton.Size = new System.Drawing.Size(245, 34);
             this.memoryDataLongGetButton.TabIndex = 5;
             this.memoryDataLongGetButton.Text = "保存データ取得";
             this.memoryDataLongGetButton.UseVisualStyleBackColor = true;
@@ -251,7 +259,7 @@
             this.latestDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.latestDataLongGetButton.Location = new System.Drawing.Point(3, 3);
             this.latestDataLongGetButton.Name = "latestDataLongGetButton";
-            this.latestDataLongGetButton.Size = new System.Drawing.Size(191, 34);
+            this.latestDataLongGetButton.Size = new System.Drawing.Size(245, 34);
             this.latestDataLongGetButton.TabIndex = 4;
             this.latestDataLongGetButton.Text = "最新データ取得";
             this.latestDataLongGetButton.UseVisualStyleBackColor = true;
@@ -262,9 +270,9 @@
             this.measurementCheckBox.AutoSize = true;
             this.measurementCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.measurementCheckBox.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.measurementCheckBox.Location = new System.Drawing.Point(200, 3);
+            this.measurementCheckBox.Location = new System.Drawing.Point(254, 3);
             this.measurementCheckBox.Name = "measurementCheckBox";
-            this.measurementCheckBox.Size = new System.Drawing.Size(191, 34);
+            this.measurementCheckBox.Size = new System.Drawing.Size(245, 34);
             this.measurementCheckBox.TabIndex = 7;
             this.measurementCheckBox.Text = "継続測定";
             this.measurementCheckBox.UseVisualStyleBackColor = true;
@@ -274,9 +282,9 @@
             // 
             this.groupBox3.Controls.Add(this.tableLayoutPanel4);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(3, 143);
+            this.groupBox3.Location = new System.Drawing.Point(3, 213);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(794, 304);
+            this.groupBox3.Size = new System.Drawing.Size(1010, 495);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "データ";
@@ -293,7 +301,7 @@
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(788, 286);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(1004, 477);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // dataChart
@@ -309,7 +317,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.dataChart.Series.Add(series1);
-            this.dataChart.Size = new System.Drawing.Size(482, 280);
+            this.dataChart.Size = new System.Drawing.Size(698, 471);
             this.dataChart.TabIndex = 0;
             this.dataChart.Text = "chart1";
             // 
@@ -317,12 +325,67 @@
             // 
             this.latestDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.latestDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.latestDataGridView.Location = new System.Drawing.Point(491, 3);
+            this.latestDataGridView.Location = new System.Drawing.Point(707, 3);
             this.latestDataGridView.Name = "latestDataGridView";
             this.latestDataGridView.ReadOnly = true;
             this.latestDataGridView.RowTemplate.Height = 21;
-            this.latestDataGridView.Size = new System.Drawing.Size(294, 280);
+            this.latestDataGridView.Size = new System.Drawing.Size(294, 471);
             this.latestDataGridView.TabIndex = 1;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.tableLayoutPanel5);
+            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox4.Location = new System.Drawing.Point(3, 3);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(1010, 64);
+            this.groupBox4.TabIndex = 3;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "データ取得方法";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Controls.Add(this.dataFromServerRadioButton, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.dataFromSensorRadioButton, 0, 0);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 15);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(1004, 46);
+            this.tableLayoutPanel5.TabIndex = 0;
+            // 
+            // dataFromServerRadioButton
+            // 
+            this.dataFromServerRadioButton.AutoSize = true;
+            this.dataFromServerRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataFromServerRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.dataFromServerRadioButton.Location = new System.Drawing.Point(505, 3);
+            this.dataFromServerRadioButton.Name = "dataFromServerRadioButton";
+            this.dataFromServerRadioButton.Size = new System.Drawing.Size(496, 34);
+            this.dataFromServerRadioButton.TabIndex = 1;
+            this.dataFromServerRadioButton.Text = "サーバーから";
+            this.dataFromServerRadioButton.UseVisualStyleBackColor = true;
+            this.dataFromServerRadioButton.CheckedChanged += new System.EventHandler(this.DataFromServerRadioButton_CheckedChanged);
+            // 
+            // dataFromSensorRadioButton
+            // 
+            this.dataFromSensorRadioButton.AutoSize = true;
+            this.dataFromSensorRadioButton.Checked = true;
+            this.dataFromSensorRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataFromSensorRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.dataFromSensorRadioButton.Location = new System.Drawing.Point(3, 3);
+            this.dataFromSensorRadioButton.Name = "dataFromSensorRadioButton";
+            this.dataFromSensorRadioButton.Size = new System.Drawing.Size(496, 34);
+            this.dataFromSensorRadioButton.TabIndex = 0;
+            this.dataFromSensorRadioButton.TabStop = true;
+            this.dataFromSensorRadioButton.Text = "センサーから";
+            this.dataFromSensorRadioButton.UseVisualStyleBackColor = true;
+            this.dataFromSensorRadioButton.CheckedChanged += new System.EventHandler(this.DataFromSensorRadioButton_CheckedChanged);
             // 
             // serialPort
             // 
@@ -337,7 +400,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1016, 711);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Form1";
             this.Text = "DemoApp";
@@ -352,6 +415,9 @@
             this.tableLayoutPanel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.latestDataGridView)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -379,6 +445,10 @@
         private System.Windows.Forms.CheckBox measurementCheckBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.DataGridView latestDataGridView;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.RadioButton dataFromServerRadioButton;
+        private System.Windows.Forms.RadioButton dataFromSensorRadioButton;
     }
 }
 

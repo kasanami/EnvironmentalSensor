@@ -1,4 +1,5 @@
-﻿using EnvironmentalSensor.USB;
+﻿using EnvironmentalSensor.Ipc;
+using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
@@ -16,6 +17,8 @@ namespace DemoApp
         /// 選択したポート
         /// </summary>
         string selectedPort = null;
+
+        Client IpcClient = new Client();
 
         public Form1()
         {
@@ -42,12 +45,20 @@ namespace DemoApp
         /// </summary>
         void UpdateUI()
         {
+            if (dataFromSensorRadioButton.Checked)
+            {
+                groupBox1.Enabled = true;
+            }
+            else
+            {
+                groupBox1.Enabled = false;
+            }
             if (serialPort.IsOpen)
             {
                 stateLlabel.Text = "接続中";
+                groupBox4.Enabled = false;// 接続中は変更不可
                 connectButton.Enabled = false;
                 disconnectButton.Enabled = true;
-                latestDataLongGetButton.Enabled = true;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
                 measurementCheckBox.Enabled = true;
@@ -55,9 +66,9 @@ namespace DemoApp
             else
             {
                 stateLlabel.Text = "非接続";
+                groupBox4.Enabled = true;
                 connectButton.Enabled = true;
                 disconnectButton.Enabled = false;
-                latestDataLongGetButton.Enabled = false;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
                 measurementCheckBox.Enabled = false;
@@ -71,17 +82,36 @@ namespace DemoApp
         /// </summary>
         void LatestDataLongGet()
         {
-            if (serialPort.IsOpen)
+            if (dataFromSensorRadioButton.Checked)
             {
-                var payload = new LatestDataLongCommandPayload();
-                var frame = new Frame(payload);
-                var buffer = frame.ToBytes();
-                Console.WriteLine(buffer.ToDebugString());
-                serialPort.Write(buffer, 0, buffer.Length);
+                if (serialPort.IsOpen)
+                {
+                    var payload = new LatestDataLongCommandPayload();
+                    var frame = new Frame(payload);
+                    var buffer = frame.ToBytes();
+                    Console.WriteLine(buffer.ToDebugString());
+                    serialPort.Write(buffer, 0, buffer.Length);
+                }
+                else
+                {
+                    Console.WriteLine("閉じてる");
+                }
             }
             else
             {
-                Console.WriteLine("閉じてる");
+                // TODO:System.Runtime.Remoting.RemotingException対応
+                var remoteObject = IpcClient.GetRemoteObject();
+                Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
+                Console.WriteLine($"{nameof(remoteObject.Index)}={remoteObject.Index}");
+                Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
+                //
+                {
+                    var payload = remoteObject.Payloads[remoteObject.Index];
+                    if (payload is LatestDataLongResponsePayload)
+                    {
+                        AddChartData(payload as LatestDataLongResponsePayload);
+                    }
+                }
             }
         }
 
@@ -95,6 +125,16 @@ namespace DemoApp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             serialPort.Close();
+        }
+
+        private void DataFromSensorRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateUI();
+        }
+
+        private void DataFromServerRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateUI();
         }
 
         /// <summary>
@@ -121,6 +161,7 @@ namespace DemoApp
                 serialPort.PortName = selectedPort;
                 serialPort.Open();
             }
+            // TODO:System.UnauthorizedAccessExceptionの対処
             UpdateUI();
         }
 
