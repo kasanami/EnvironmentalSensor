@@ -1,4 +1,5 @@
 ﻿using EnvironmentalSensor.USB;
+using EnvironmentalSensor.USB.Payloads;
 using System;
 
 namespace EnvironmentalSensor.Ipc
@@ -19,6 +20,8 @@ namespace EnvironmentalSensor.Ipc
         public int Index { get; protected set; }
         /// <summary>
         /// センサーから受信した情報
+        /// <para>インデックスを回して格納される</para>
+        /// <para>インデックスが最後になったら最初に戻る</para>
         /// </summary>
         public FramePayload[] Payloads { get; protected set; } = new FramePayload[256];
         /// <summary>
@@ -33,10 +36,12 @@ namespace EnvironmentalSensor.Ipc
         public void Set(FramePayload payload)
         {
             UpdateCompleted = false;
+
             TimeStampTicks = DateTime.Now.Ticks;
             Index++;
             if (Index >= Payloads.Length) { Index = 0; }
             Payloads[Index] = payload;
+
             UpdateCompleted = true;
         }
     }
