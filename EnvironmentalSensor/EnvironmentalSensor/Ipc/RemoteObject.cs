@@ -1,33 +1,34 @@
 ﻿using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace EnvironmentalSensor.Ipc
 {
+    /// <summary>
+    /// IPCで共有する情報
+    /// </summary>
     public class RemoteObject : MarshalByRefObject
     {
         /// <summary>
         /// Payloadsの最大数
         /// </summary>
-        const int PayloadsMaxCount = 1024;
+        const int PayloadsMaxCount = 256;
         /// <summary>
         /// 情報を設定した日時
         /// </summary>
-        public long TimeStampTicks;
+        public long TimeStampBinary;
         /// <summary>
         /// 情報を設定した日時
         /// </summary>
-        public DateTime TimeStamp { get => new DateTime(TimeStampTicks); }
-        /// <summary>
-        /// 最新のPayloadsのインデックス
-        /// </summary>
-        public int LatestIndex { get; protected set; }
+        public DateTime TimeStamp { get => DateTime.FromBinary(TimeStampBinary); }
         /// <summary>
         /// センサーから受信した情報
         /// <para>最大値に達したら古いものから削除される</para>
+        /// <para>Keyは、TimeStampBinary</para>
         /// </summary>
-        public List<FramePayload> Payloads { get; protected set; } = new List<FramePayload>();
+        public Dictionary<long, FramePayload> Payloads { get; protected set; } = new Dictionary<long, FramePayload>();
         /// <summary>
         /// 情報の更新が完了しているならtrue
         /// <para>情報の更新直前にfalseに設定される</para>
@@ -41,14 +42,16 @@ namespace EnvironmentalSensor.Ipc
         {
             UpdateCompleted = false;
 
-            TimeStampTicks = DateTime.Now.Ticks;
+            var now = DateTime.Now;
 
-            Payloads.Add(payload);
+            TimeStampBinary = now.ToBinary();
+
+            Payloads.Add(TimeStampBinary, payload);
             if (Payloads.Count > PayloadsMaxCount)
             {
-                Payloads.RemoveAt(0);
+                var oldestKey = Payloads.Keys.Min();
+                Payloads.Remove(oldestKey);
             }
-            LatestIndex = Payloads.Count - 1;
 
             UpdateCompleted = true;
         }

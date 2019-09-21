@@ -77,6 +77,7 @@ namespace DemoApp
         }
 
         #region センサー関係
+        long lastTimeStamp = long.MinValue;
         /// <summary>
         /// 最新データを取得
         /// </summary>
@@ -102,15 +103,32 @@ namespace DemoApp
                 // TODO:System.Runtime.Remoting.RemotingException対応
                 var remoteObject = IpcClient.GetRemoteObject();
                 Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
-                Console.WriteLine($"{nameof(remoteObject.Index)}={remoteObject.Index}");
+                Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
                 Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
-                //
+                // 最後の取得より以降なら描画更新
+                if (lastTimeStamp < remoteObject.TimeStampBinary)
                 {
-                    var payload = remoteObject.Payloads[remoteObject.Index];
-                    if (payload is LatestDataLongResponsePayload)
+                    // 最後の取得時刻から最新時刻までを、グラフに表示
+                    foreach (var item in remoteObject.Payloads)
                     {
-                        AddChartData(payload as LatestDataLongResponsePayload);
+                        if (item.Key > lastTimeStamp)
+                        {
+                            var payload = item.Value;
+                            if (payload is LatestDataLongResponsePayload)
+                            {
+                                AddChartData(payload as LatestDataLongResponsePayload);
+                            }
+                        }
                     }
+                    // 表は最新時刻のみ表示
+                    {
+                        var payload = remoteObject.Payloads[remoteObject.TimeStampBinary];
+                        if (payload is LatestDataLongResponsePayload)
+                        {
+                            SetLatestListData(payload as LatestDataLongResponsePayload);
+                        }
+                    }
+                    lastTimeStamp = remoteObject.TimeStampBinary;
                 }
             }
         }
