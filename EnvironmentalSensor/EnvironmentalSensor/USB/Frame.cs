@@ -113,11 +113,14 @@ namespace EnvironmentalSensor.USB
             // Payload + CRC16
             Length = (ushort)(payloadBytes.Length + sizeof(ushort));
             // CRC16計算
-            var data = new List<byte>();
-            data.AddRange(BitConverter.GetBytes(Header));
-            data.AddRange(BitConverter.GetBytes(Length));
-            data.AddRange(Payload.ToBytes());
-            CRC16 = crc16.ComputeHash(data.ToArray());
+            using (var memoryStream = new MemoryStream())
+            using (var binaryWriter = new BinaryWriter(memoryStream))
+            {
+                binaryWriter.Write(Header);
+                binaryWriter.Write(Length);
+                binaryWriter.Write(payloadBytes);
+                CRC16 = crc16.ComputeHash(memoryStream.ToArray());
+            }
         }
         /// <summary>
         /// バイト配列に変換する。
@@ -125,12 +128,15 @@ namespace EnvironmentalSensor.USB
         /// <returns>バイト配列</returns>
         public byte[] ToBytes()
         {
-            var data = new List<byte>();
-            data.AddRange(BitConverter.GetBytes(Header));
-            data.AddRange(BitConverter.GetBytes(Length));
-            data.AddRange(Payload.ToBytes());
-            data.AddRange(BitConverter.GetBytes(CRC16));
-            return data.ToArray();
+            using (var memoryStream = new MemoryStream())
+            using (var binaryWriter = new BinaryWriter(memoryStream))
+            {
+                binaryWriter.Write(Header);
+                binaryWriter.Write(Length);
+                binaryWriter.Write(Payload.ToBytes());
+                binaryWriter.Write(CRC16);
+                return memoryStream.ToArray();
+            }
         }
 
         static void DebugWriteLine(string message)
