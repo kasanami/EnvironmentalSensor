@@ -6,7 +6,6 @@ namespace EnvironmentalSensor.USB.Payloads
 {
     /// <summary>
     /// LatestDataLongResponsePayload,MemoryDataLongResponsePayloadの基底クラス
-    /// プロパティを持つのみ、初期化機能はない
     /// </summary>
     public class DataLongResponsePayload : ResponsePayload
     {
@@ -32,7 +31,7 @@ namespace EnvironmentalSensor.USB.Payloads
             Temperature.Raw = binaryReader.ReadInt16();
             RelativeHumidity.Raw = binaryReader.ReadInt16();
             AmbientLight.Raw = binaryReader.ReadInt16();
-            BarometricPressure.Raw = binaryReader.ReadInt16();
+            BarometricPressure.Raw = binaryReader.ReadInt32();
             SoundNoise.Raw = binaryReader.ReadInt16();
             eTVOC.Raw = binaryReader.ReadInt16();
             eCO2.Raw = binaryReader.ReadInt16();
@@ -188,6 +187,38 @@ namespace EnvironmentalSensor.USB.Payloads
             text.AppendLine(nameof(PGAFlag) + "=" + PGAFlag);
             text.AppendLine(nameof(SeismicIntensityFlag) + "=" + SeismicIntensityFlag);
             return text.ToString();
+        }
+        /// <summary>
+        /// ストリームに書き込む
+        /// </summary>
+        public void WriteOn(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)Temperature.Raw);
+            binaryWriter.Write((Int16)RelativeHumidity.Raw);
+            binaryWriter.Write((Int16)AmbientLight.Raw);
+            binaryWriter.Write((Int32)BarometricPressure.Raw);
+            binaryWriter.Write((Int16)SoundNoise.Raw);
+            binaryWriter.Write((Int16)eTVOC.Raw);
+            binaryWriter.Write((Int16)eCO2.Raw);
+            binaryWriter.Write((Int16)DiscomfortIndex.Raw);
+            binaryWriter.Write((Int16)HeatStroke.Raw);
+            binaryWriter.Write((byte)VibrationInformation);
+            binaryWriter.Write((UInt16)SIValue.Raw);
+            binaryWriter.Write((UInt16)PGA.Raw);
+            binaryWriter.Write((UInt16)SeismicIntensity.Raw);
+
+            binaryWriter.Write((UInt16)TemperatureFlag);
+            binaryWriter.Write((UInt16)RelativeHumidityFlag);
+            binaryWriter.Write((UInt16)AmbientLightFlag);
+            binaryWriter.Write((UInt16)BarometricPressureFlag);
+            binaryWriter.Write((UInt16)SoundNoiseFlag);
+            binaryWriter.Write((UInt16)eTVOCFlag);
+            binaryWriter.Write((UInt16)eCO2Flag);
+            binaryWriter.Write((UInt16)DiscomfortIndexFlag);
+            binaryWriter.Write((UInt16)HeatStrokeFlag);
+            binaryWriter.Write((Byte)SIValueFlag);
+            binaryWriter.Write((Byte)PGAFlag);
+            binaryWriter.Write((Byte)SeismicIntensityFlag);
         }
     }
 }
