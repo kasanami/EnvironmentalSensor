@@ -18,11 +18,13 @@ namespace EnvironmentalSensor.USB.Payloads
         {
             if (Address == FrameAddress.LatestDataLong)
             {
-                binaryReader.BaseStream.Seek(offset + 1, SeekOrigin.Begin);
+                // SequenceNumber のサイズ分すすめる
+                binaryReader.BaseStream.Seek(offset + sizeof(byte), SeekOrigin.Begin);
             }
             else if (Address == FrameAddress.MemoryDataLong)
             {
-                binaryReader.BaseStream.Seek(offset + 6, SeekOrigin.Begin);
+                // MemoryIndex と TimeCounter のサイズ分すすめる
+                binaryReader.BaseStream.Seek(offset + sizeof(UInt32)+ sizeof(UInt64), SeekOrigin.Begin);
             }
             else
             {
