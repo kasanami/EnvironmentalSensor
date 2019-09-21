@@ -101,35 +101,42 @@ namespace DemoApp
             else
             {
                 // TODO:System.Runtime.Remoting.RemotingException対応
-                var remoteObject = IpcClient.GetRemoteObject();
-                Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
-                Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
-                Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
-                // 最後の取得より以降なら描画更新
-                if (lastTimeStamp < remoteObject.TimeStampBinary)
+                try
                 {
-                    // 最後の取得時刻から最新時刻までを、グラフに表示
-                    foreach (var item in remoteObject.Payloads)
+                    var remoteObject = IpcClient.GetRemoteObject();
+                    Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
+                    Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
+                    Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
+                    // 最後の取得より以降なら描画更新
+                    if (lastTimeStamp < remoteObject.TimeStampBinary)
                     {
-                        if (item.Key > lastTimeStamp)
+                        // 最後の取得時刻から最新時刻までを、グラフに表示
+                        foreach (var item in remoteObject.Payloads)
                         {
-                            var dateTime = DateTime.FromBinary(item.Key);
-                            var payload = item.Value;
-                            if (payload is LatestDataLongResponsePayload)
+                            if (item.Key > lastTimeStamp)
                             {
-                                AddChartData(dateTime, payload as LatestDataLongResponsePayload);
+                                var dateTime = DateTime.FromBinary(item.Key);
+                                var payload = item.Value;
+                                if (payload is LatestDataLongResponsePayload)
+                                {
+                                    AddChartData(dateTime, payload as LatestDataLongResponsePayload);
+                                }
                             }
                         }
-                    }
-                    // 表は最新時刻のみ表示
-                    {
-                        var payload = remoteObject.Payloads[remoteObject.TimeStampBinary];
-                        if (payload is LatestDataLongResponsePayload)
+                        // 表は最新時刻のみ表示
                         {
-                            SetLatestListData(payload as LatestDataLongResponsePayload);
+                            var payload = remoteObject.Payloads[remoteObject.TimeStampBinary];
+                            if (payload is LatestDataLongResponsePayload)
+                            {
+                                SetLatestListData(payload as LatestDataLongResponsePayload);
+                            }
                         }
+                        lastTimeStamp = remoteObject.TimeStampBinary;
                     }
-                    lastTimeStamp = remoteObject.TimeStampBinary;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
                 }
             }
         }
