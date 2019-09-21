@@ -113,10 +113,11 @@ namespace DemoApp
                     {
                         if (item.Key > lastTimeStamp)
                         {
+                            var dateTime = DateTime.FromBinary(item.Key);
                             var payload = item.Value;
                             if (payload is LatestDataLongResponsePayload)
                             {
-                                AddChartData(payload as LatestDataLongResponsePayload);
+                                AddChartData(dateTime, payload as LatestDataLongResponsePayload);
                             }
                         }
                     }
@@ -382,15 +383,19 @@ namespace DemoApp
         }
         void AddChartData(LatestDataLongResponsePayload payload)
         {
+            AddChartData(DateTime.Now, payload);
+        }
+        void AddChartData(DateTime dateTime, LatestDataLongResponsePayload payload)
+        {
             Console.WriteLine(nameof(AddChartData));
             if (dataChart.InvokeRequired)
             {
                 var _delegate = new AddChartDataDelegate(AddChartData);
-                Invoke(_delegate, new object[] { payload });
+                Invoke(_delegate, new object[] { dateTime, payload });
             }
             else
             {
-                var now = DateTime.Now - StandardDateTime;
+                var now = dateTime - StandardDateTime;
                 var x = Math.Round(now.TotalSeconds);
                 dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
                 foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
@@ -400,7 +405,7 @@ namespace DemoApp
                 }
             }
         }
-        delegate void AddChartDataDelegate(LatestDataLongResponsePayload payload);
+        delegate void AddChartDataDelegate(DateTime dateTime, LatestDataLongResponsePayload payload);
 
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
