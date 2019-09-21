@@ -1,6 +1,7 @@
 ﻿using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace EnvironmentalSensor.USB
@@ -23,20 +24,33 @@ namespace EnvironmentalSensor.USB
         /// </summary>
         public virtual byte[] Data { get; set; }
         /// <summary>
+        /// Dataメンバーを更新
+        /// </summary>
+        public virtual void UpdateData()
+        {
+        }
+        /// <summary>
         /// このインスタンス情報をバイト配列に変換
         /// </summary>
         /// <returns>バイト配列</returns>
         public byte[] ToBytes()
         {
-            var data = new List<byte>();
-            data.Add((byte)Command);
-            data.AddRange(BitConverter.GetBytes((ushort)Address));
-            if (Data != null)
+            using (var memoryStream = new MemoryStream())
+            using (var binaryWriter = new BinaryWriter(memoryStream))
             {
-                data.AddRange(Data);
+                binaryWriter.Write((byte)Command);
+                binaryWriter.Write((ushort)Address);
+                UpdateData();
+                if (Data != null)
+                {
+                    binaryWriter.Write(Data);
+                }
+                return memoryStream.ToArray();
             }
-            return data.ToArray();
         }
+        /// <summary>
+        /// 文字列に変換
+        /// </summary>
         public override string ToString()
         {
             var text = new StringBuilder();
