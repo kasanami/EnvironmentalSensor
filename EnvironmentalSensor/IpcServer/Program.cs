@@ -4,8 +4,11 @@ using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using Ksnm.Utilities;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IpcServer
@@ -17,11 +20,14 @@ namespace IpcServer
     {
         const string DateTimeFormat = "yyyy/MM/dd HH:mm:ss";
 
+        #region 通信関係
         static SerialPort serialPort = new SerialPort();
         static byte[] readBuffer = new byte[serialPort.ReadBufferSize];
 
         static Server server = new Server();
+        #endregion 通信関係
 
+        #region ログ関係
         static CsvLogger csvLogger = null;
 
         [Flags]
@@ -33,6 +39,7 @@ namespace IpcServer
             All = 0xFFFF_FFFF,
         }
         static LogFlags logMode = LogFlags.All;
+        #endregion ログ関係
 
         static void Main(string[] args)
         {
@@ -60,13 +67,36 @@ namespace IpcServer
                 serialPort.PortName = portName;
                 serialPort.Open();
             }
-            // 
+            // ログ準備
             {
-                csvLogger = new CsvLogger($"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv");
-                LogHeader();
-                EnvironmentalSensorCommunication();
-                Console.WriteLine("終了するにはなにかキーを入力");
-                Console.ReadLine();
+                var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
+                var exists = File.Exists(logFilePath);
+                csvLogger = new CsvLogger(logFilePath);
+                // ログファイルがもともと無かったらヘッダーを書き込み
+                if (exists == false)
+                {
+                    LogHeader();
+                }
+            }
+            while (true)
+            {
+                // 非同期処理をCancelするためのTokenを取得.
+                using (var cancellationTokenSource = new CancellationTokenSource())
+                {
+                    EnvironmentalSensorCommunication(cancellationTokenSource.Token);
+                    // 入力待ち
+                    Console.WriteLine("停止するにはなにかキーを入力");
+                    Console.ReadLine();
+                    // 入力されたら停止
+                    cancellationTokenSource.Cancel();
+                }
+                // 入力待ち
+                Console.WriteLine($"終了する場合は[Q] それ以外のキーは再開");
+                var read = Console.ReadLine();
+                if (read.ToUpper() == "Q")
+                {
+                    break;
+                }
             }
             // 終了
             serialPort.Close();
@@ -74,10 +104,15 @@ namespace IpcServer
         /// <summary>
         /// 定期的にデータを取得
         /// </summary>
-        static async void EnvironmentalSensorCommunication()
+        static async void EnvironmentalSensorCommunication(CancellationToken cancelToken)
         {
             while (true)
             {
+                // キャンセルリクエストが来たらキャンセル
+                if (cancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 if (serialPort.IsOpen)
                 {
                     var payload = new LatestDataLongCommandPayload();
@@ -103,12 +138,13 @@ namespace IpcServer
             {
                 // 日付が変わったらファイル名変更
                 csvLogger = new CsvLogger(logFilePath);
+                LogHeader();
             }
             var readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
-#if DEBUG
-            Console.WriteLine("DataReceived");
-            Console.WriteLine($"readSize={readSize}");
-#endif
+
+            DebugWriteLine("DataReceived");
+            DebugWriteLine($"readSize={readSize}");
+
             if (readSize > 0)
             {
                 try
@@ -254,6 +290,13 @@ namespace IpcServer
                 $"{payload.PGAFlag}",
                 $"{payload.SeismicIntensityFlag}"
                 );
+        }
+
+        static void DebugWriteLine(string message)
+        {
+#if DEBUG
+            //Console.WriteLine(message);
+#endif
         }
     }
 }

@@ -59,18 +59,18 @@ namespace EnvironmentalSensor.USB
                     }
                 }
                 Header = binaryReader.ReadUInt16();
-#if DEBUG
-                Console.WriteLine($"{nameof(Header)}={Header.ToString("X4")}");
-#endif
+
+                DebugWriteLine($"{nameof(Header)}={Header.ToString("X4")}");
+
                 if (Header != MagicNumber)
                 {
                     // 対応してるデータではない
                     throw new NotSupportedException($"Header={Header.ToString("X4")}");
                 }
                 Length = binaryReader.ReadUInt16();
-#if DEBUG
-                Console.WriteLine($"{nameof(Length)}={Length}");
-#endif
+
+                DebugWriteLine($"{nameof(Length)}={Length}");
+
                 // データ長チェック
                 {
                     // 本来あるべき全体のサイズ
@@ -87,9 +87,9 @@ namespace EnvironmentalSensor.USB
                     memoryStream.Read(tempBuffer, 0, tempBuffer.Length);
                     var computedCRC16 = crc16.ComputeHash(tempBuffer);
                     CRC16 = binaryReader.ReadUInt16();
-#if DEBUG
-                    Console.WriteLine($"{nameof(CRC16)}={CRC16}");
-#endif
+
+                    DebugWriteLine($"{nameof(CRC16)}={CRC16}");
+
                     if (CRC16 != computedCRC16)
                     {
                         // CRCの結果 データ破損
@@ -134,6 +134,13 @@ namespace EnvironmentalSensor.USB
             data.AddRange(Payload.ToBytes());
             data.AddRange(BitConverter.GetBytes(CRC16));
             return data.ToArray();
+        }
+
+        static void DebugWriteLine(string message)
+        {
+#if DEBUG
+            //Console.WriteLine(message);
+#endif
         }
     }
 }
