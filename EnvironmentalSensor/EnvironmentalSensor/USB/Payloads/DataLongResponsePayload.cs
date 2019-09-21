@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace EnvironmentalSensor.USB.Payloads
 {
@@ -8,8 +10,50 @@ namespace EnvironmentalSensor.USB.Payloads
     /// </summary>
     public class DataLongResponsePayload : ResponsePayload
     {
-        public DataLongResponsePayload(byte[] buffer) : base(buffer)
+        /// <summary>
+        /// 指定のストリームから初期化
+        /// </summary>
+        /// <param name="binaryReader">Payloadが含まれるストリーム</param>
+        /// <param name="offset">Payloadの先頭位置のオフセット</param>
+        public DataLongResponsePayload(BinaryReader binaryReader, int offset) : base(binaryReader, offset)
         {
+            if (Address == FrameAddress.LatestDataLong)
+            {
+                binaryReader.BaseStream.Seek(offset + 1, SeekOrigin.Begin);
+            }
+            else if (Address == FrameAddress.MemoryDataLong)
+            {
+                binaryReader.BaseStream.Seek(offset + 6, SeekOrigin.Begin);
+            }
+            else
+            {
+                throw new NotImplementedException($"{nameof(Address)}={Address}");
+            }
+            Temperature.Raw = binaryReader.ReadInt16();
+            RelativeHumidity.Raw = binaryReader.ReadInt16();
+            AmbientLight.Raw = binaryReader.ReadInt16();
+            BarometricPressure.Raw = binaryReader.ReadInt16();
+            SoundNoise.Raw = binaryReader.ReadInt16();
+            eTVOC.Raw = binaryReader.ReadInt16();
+            eCO2.Raw = binaryReader.ReadInt16();
+            DiscomfortIndex.Raw = binaryReader.ReadInt16();
+            HeatStroke.Raw = binaryReader.ReadInt16();
+            VibrationInformation = binaryReader.ReadByte();
+            SIValue.Raw = binaryReader.ReadUInt16();
+            PGA.Raw = binaryReader.ReadUInt16();
+            SeismicIntensity.Raw = binaryReader.ReadUInt16();
+            TemperatureFlag = binaryReader.ReadUInt16();
+            RelativeHumidityFlag = binaryReader.ReadUInt16();
+            AmbientLightFlag = binaryReader.ReadUInt16();
+            BarometricPressureFlag = binaryReader.ReadUInt16();
+            SoundNoiseFlag = binaryReader.ReadUInt16();
+            eTVOCFlag = binaryReader.ReadUInt16();
+            eCO2Flag = binaryReader.ReadUInt16();
+            DiscomfortIndexFlag = binaryReader.ReadUInt16();
+            HeatStrokeFlag = binaryReader.ReadUInt16();
+            SIValueFlag = binaryReader.ReadByte();
+            PGAFlag = binaryReader.ReadByte();
+            SeismicIntensityFlag = binaryReader.ReadByte();
         }
         public DataLongResponsePayload()
         {
@@ -20,70 +64,50 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <para>範囲:-40.00 to 125.00</para>
         /// <para>単位:0.01 degC</para>
         /// </summary>
-        public Int16 Temperature { get; protected set; }
-        /// <summary>
-        /// Temperature の単位を変換するための係数
-        /// </summary>
-        public double TemperatureUnit { get; } = 0.01;
+        public SensorValue Temperature { get; protected set; } = new SensorValue(0, 0.01, -40, 125, "degC");
         /// <summary>
         /// 相対湿度
         /// <para>範囲:0.00 to 100.00</para>
         /// <para>単位:0.01 %RH</para>
         /// </summary>
-        public Int16 RelativeHumidity { get; protected set; }
-        /// <summary>
-        /// RelativeHumidity の単位を変換するための係数
-        /// </summary>
-        public double RelativeHumidityUnit { get; } = 0.01;
+        public SensorValue RelativeHumidity { get; protected set; } = new SensorValue(0, 0.01, 0, 100, "%RH");
         /// <summary>
         /// 周囲光
         /// <para>範囲:0 to 30000</para>
         /// <para>単位:1 lx(ルクス)</para>
         /// </summary>
-        public Int16 AmbientLight { get; protected set; }
+        public SensorValue AmbientLight { get; protected set; } = new SensorValue(0, 1, 0, 30000, "lx");
         /// <summary>
         /// 気圧
         /// <para>範囲:300.000 to 1100.000</para>
         /// <para>単位:0.001 hPa</para>
         /// </summary>
-        public Int32 BarometricPressure { get; protected set; }
-        /// <summary>
-        /// BarometricPressure の単位を変換するための係数
-        /// </summary>
-        public double BarometricPressureUnit { get; } = 0.001;
+        public SensorValue BarometricPressure { get; protected set; } = new SensorValue(0, 0.001, 300, 1100, "hPa");
         /// <summary>
         /// 雑音
         /// <para>範囲:33.00 to 120.00</para>
         /// <para>単位:0.01 dB</para>
         /// </summary>
-        public Int16 SoundNoise { get; protected set; }
-        /// <summary>
-        /// SoundNoise の単位を変換するための係数
-        /// </summary>
-        public double SoundNoiseUnit { get; } = 0.01;
+        public SensorValue SoundNoise { get; protected set; } = new SensorValue(0, 0.01, 33, 120, "dB");
         /// <summary>
         /// 総揮発性有機化学物量相当値（equivalent Total Volatile Organic Compounds）の略称
         /// <para>範囲:0 to 32767</para>
         /// <para>単位:1 ppb</para>
         /// </summary>
-        public Int16 eTVOC { get; protected set; }
+        public SensorValue eTVOC { get; protected set; } = new SensorValue(0, 1, 0, 32767, "ppb");
         /// <summary>
         /// 二酸化炭素換算の数値(equivalent CO2)
         /// <para>範囲:400 to 32767</para>
         /// <para>単位:1 ppm</para>
         /// </summary>
-        public Int16 eCO2 { get; protected set; }
+        public SensorValue eCO2 { get; protected set; } = new SensorValue(0, 1, 400, 32767, "ppm");
         /// <summary>
         /// 不快指数
         /// <para>夏の蒸し暑さを数量的に表現したもの．温度と湿度から換算する．</para>
         /// <para>範囲:0.00 to 100.00</para>
         /// <para>単位:0.01</para>
         /// </summary>
-        public Int16 DiscomfortIndex { get; protected set; }
-        /// <summary>
-        /// DiscomfortIndex の単位を変換するための係数
-        /// </summary>
-        public double DiscomfortIndexUnit { get; } = 0.01;
+        public SensorValue DiscomfortIndex { get; protected set; } = new SensorValue(0, 0.01, 0, 100, "");
         /// <summary>
         /// 熱中症警戒度
         /// <para>熱中症の危険度を数量的に表現したもの．温度と湿度から換算する．</para>
@@ -91,11 +115,7 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <para>範囲:-40.00 to 125.00</para>
         /// <para>単位:0.01 degC</para>
         /// </summary>
-        public Int16 HeatStroke { get; protected set; }
-        /// <summary>
-        /// HeatStroke の単位を変換するための係数
-        /// </summary>
-        public double HeatStrokeUnit { get; } = 0.01;
+        public SensorValue HeatStroke { get; protected set; } = new SensorValue(0, 0.01, -40, 125, "degC");
         /// <summary>
         /// 振動情報
         /// <para>0x00: NONE</para>
@@ -109,31 +129,19 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <para>範囲:0.0 to 6553.5</para>
         /// <para>単位:0.1 kine</para>
         /// </summary>
-        public UInt16 SIValue { get; protected set; }
-        /// <summary>
-        /// SIValue の単位を変換するための係数
-        /// </summary>
-        public double SIValueUnit { get; } = 0.1;
+        public SensorValue SIValue { get; protected set; } = new SensorValue(0, 0.1, 0, 6553.5, "kine");
         /// <summary>
         /// ある区間の最大加速度値．水平 2 軸の加速度値を合成して換算する．
         /// <para>範囲:0.0 to 6553.5</para>
         /// <para>単位:0.1 gal</para>
         /// </summary>
-        public UInt16 PGA { get; protected set; }
-        /// <summary>
-        /// PGA の単位を変換するための係数
-        /// </summary>
-        public double PGAUnit { get; } = 0.1;
+        public SensorValue PGA { get; protected set; } = new SensorValue(0, 0.1, 0, 6553.5, "gal");
         /// <summary>
         /// SI 値から求めた震度に相関した値．
         /// <para>範囲:0.000 to 65.535</para>
         /// <para>単位:0.001</para>
         /// </summary>
-        public UInt16 SeismicIntensity { get; protected set; }
-        /// <summary>
-        /// SeismicIntensity の単位を変換するための係数
-        /// </summary>
-        public double SeismicIntensityUnit { get; } = 0.001;
+        public SensorValue SeismicIntensity { get; protected set; } = new SensorValue(0, 0.001, 0, 65.535, "");
         #endregion 各種センサの出力
 
         #region フラグ
@@ -150,5 +158,36 @@ namespace EnvironmentalSensor.USB.Payloads
         public Byte PGAFlag { get; protected set; }
         public Byte SeismicIntensityFlag { get; protected set; }
         #endregion フラグ
+
+        protected string ToInnerString()
+        {
+            var text = new StringBuilder();
+            text.AppendLine(nameof(Temperature) + "=" + Temperature);
+            text.AppendLine(nameof(RelativeHumidity) + "=" + RelativeHumidity);
+            text.AppendLine(nameof(AmbientLight) + "=" + AmbientLight);
+            text.AppendLine(nameof(BarometricPressure) + "=" + BarometricPressure);
+            text.AppendLine(nameof(SoundNoise) + "=" + SoundNoise);
+            text.AppendLine(nameof(eTVOC) + "=" + eTVOC);
+            text.AppendLine(nameof(eCO2) + "=" + eCO2);
+            text.AppendLine(nameof(DiscomfortIndex) + "=" + DiscomfortIndex);
+            text.AppendLine(nameof(HeatStroke) + "=" + HeatStroke);
+            text.AppendLine(nameof(VibrationInformation) + "=" + VibrationInformation);
+            text.AppendLine(nameof(SIValue) + "=" + SIValue);
+            text.AppendLine(nameof(PGA) + "=" + PGA);
+            text.AppendLine(nameof(SeismicIntensity) + "=" + SeismicIntensity);
+            text.AppendLine(nameof(TemperatureFlag) + "=" + TemperatureFlag);
+            text.AppendLine(nameof(RelativeHumidityFlag) + "=" + RelativeHumidityFlag);
+            text.AppendLine(nameof(AmbientLightFlag) + "=" + AmbientLightFlag);
+            text.AppendLine(nameof(BarometricPressureFlag) + "=" + BarometricPressureFlag);
+            text.AppendLine(nameof(SoundNoiseFlag) + "=" + SoundNoiseFlag);
+            text.AppendLine(nameof(eTVOCFlag) + "=" + eTVOCFlag);
+            text.AppendLine(nameof(eCO2Flag) + "=" + eCO2Flag);
+            text.AppendLine(nameof(DiscomfortIndexFlag) + "=" + DiscomfortIndexFlag);
+            text.AppendLine(nameof(HeatStrokeFlag) + "=" + HeatStrokeFlag);
+            text.AppendLine(nameof(SIValueFlag) + "=" + SIValueFlag);
+            text.AppendLine(nameof(PGAFlag) + "=" + PGAFlag);
+            text.AppendLine(nameof(SeismicIntensityFlag) + "=" + SeismicIntensityFlag);
+            return text.ToString();
+        }
     }
 }

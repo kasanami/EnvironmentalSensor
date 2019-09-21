@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace EnvironmentalSensor.USB.Payloads
 {
@@ -11,31 +12,35 @@ namespace EnvironmentalSensor.USB.Payloads
         {
         }
         /// <summary>
-        /// 指定のバッファから初期化
+        /// 指定のストリームから初期化
         /// </summary>
-        /// <param name="buffer">Payloadが含まれるバッファ</param>
-        protected ResponsePayload(byte[] buffer)
+        /// <param name="binaryReader">Payloadが含まれるストリーム</param>
+        /// <param name="offset">Payloadの先頭位置のオフセット</param>
+        protected ResponsePayload(BinaryReader binaryReader, int offset)
         {
-            Command = (FrameCommand)buffer[0];
-            Address = (FrameAddress)BitConverter.ToUInt16(buffer, 1);
-            Data = new byte[buffer.Length - 3];
-            Buffer.BlockCopy(buffer, 3, Data, 0, Data.Length);
+            binaryReader.BaseStream.Seek(offset, SeekOrigin.Begin);
+            Command = (FrameCommand)binaryReader.ReadByte();
+            Address = (FrameAddress)binaryReader.ReadUInt16();
+            Data = binaryReader.ReadBytes((int)(binaryReader.BaseStream.Length - binaryReader.BaseStream.Position));
         }
         /// <summary>
-        /// 指定したバッファから、インスタンスを生成する。
+        /// 指定したストリームから、インスタンスを生成する。
         /// </summary>
-        /// <param name="buffer">Payloadが含まれるバッファ</param>
-        public static ResponsePayload Create(byte[] buffer)
+        /// <param name="binaryReader">Payloadが含まれるストリーム</param>
+        /// <param name="offset">Payloadの先頭位置のオフセット</param>
+        public static ResponsePayload Create(BinaryReader binaryReader, int offset)
         {
-            var command = (FrameCommand)buffer[0];
-            var address = (FrameAddress)BitConverter.ToUInt16(buffer, 1);
+            binaryReader.BaseStream.Seek(offset, SeekOrigin.Begin);
+            var command = (FrameCommand)binaryReader.ReadByte();
+            var address = (FrameAddress)binaryReader.ReadUInt16();
+            // 各ペイロードのインスタンスを生成
             if (command.HasFlag(FrameCommand.Error))
             {
-                return new ErrorResponsePayload(buffer);
+                return new ErrorResponsePayload(binaryReader, offset);
             }
             else if (address == FrameAddress.MemoryDataLong)
             {
-                return new MemoryDataLongResponsePayload(buffer);
+                return new MemoryDataLongResponsePayload(binaryReader, offset);
             }
             else if (address == FrameAddress.MemoryDataShort)
             {
@@ -43,7 +48,7 @@ namespace EnvironmentalSensor.USB.Payloads
             }
             else if (address == FrameAddress.LatestDataLong)
             {
-                return new LatestDataLongResponsePayload(buffer);
+                return new LatestDataLongResponsePayload(binaryReader, offset);
             }
             else if (address == FrameAddress.LatestDataShort)
             {
@@ -59,7 +64,7 @@ namespace EnvironmentalSensor.USB.Payloads
             }
             else
             {
-                return new ResponsePayload(buffer);
+                return new ResponsePayload(binaryReader, offset);
             }
         }
     }

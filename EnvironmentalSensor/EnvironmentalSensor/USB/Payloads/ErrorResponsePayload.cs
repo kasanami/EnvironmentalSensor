@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace EnvironmentalSensor.USB.Payloads
 {
@@ -13,10 +14,11 @@ namespace EnvironmentalSensor.USB.Payloads
         /// </summary>
         public ErrorCode Code { get; private set; }
         /// <summary>
-        /// 指定されたバッファから初期化
+        /// 指定のストリームから初期化
         /// </summary>
-        /// <param name="buffer">Payloadの範囲のバッファ</param>
-        public ErrorResponsePayload(byte[] buffer) : base(buffer)
+        /// <param name="binaryReader">Payloadが含まれるストリーム</param>
+        /// <param name="offset">Payloadの先頭位置のオフセット</param>
+        public ErrorResponsePayload(BinaryReader binaryReader, int offset) : base(binaryReader, offset)
         {
             Code = (ErrorCode)Data[0];
         }

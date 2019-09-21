@@ -48,6 +48,7 @@
     <Compile Include="Ipc\RemoteObject.cs" />
     <Compile Include="Ipc\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SensorValue.cs" />
     <Compile Include="USB\ErrorCode.cs" />
     <Compile Include="USB\Frame.cs" />
     <Compile Include="USB\FrameAddress.cs" />

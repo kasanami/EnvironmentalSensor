@@ -417,19 +417,19 @@ namespace DemoApp
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
             if (dataId == DataId.SequenceNumber) return payload.SequenceNumber * 0.1;
-            if (dataId == DataId.Temperature) return payload.Temperature * payload.TemperatureUnit;
-            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity * payload.RelativeHumidityUnit;
-            if (dataId == DataId.AmbientLight) return payload.AmbientLight;
-            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure * payload.BarometricPressureUnit;
-            if (dataId == DataId.SoundNoise) return payload.SoundNoise * payload.SoundNoiseUnit * 100;
-            if (dataId == DataId.eTVOC) return payload.eTVOC * 0.01;
-            if (dataId == DataId.eCO2) return payload.eCO2 * 0.1;
-            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex * payload.DiscomfortIndexUnit;
-            if (dataId == DataId.HeatStroke) return payload.HeatStroke * payload.HeatStrokeUnit;
+            if (dataId == DataId.Temperature) return payload.Temperature.Value;
+            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity.Value;
+            if (dataId == DataId.AmbientLight) return payload.AmbientLight.Value;
+            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure.Value;
+            if (dataId == DataId.SoundNoise) return payload.SoundNoise.Value;
+            if (dataId == DataId.eTVOC) return payload.eTVOC.Value;
+            if (dataId == DataId.eCO2) return payload.eCO2.Value;
+            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex.Value;
+            if (dataId == DataId.HeatStroke) return payload.HeatStroke.Value;
             if (dataId == DataId.VibrationInformation) return payload.VibrationInformation * 0.1;
-            if (dataId == DataId.SIValue) return payload.SIValue * payload.SIValueUnit;
-            if (dataId == DataId.PGA) return payload.PGA * payload.PGAUnit;
-            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity * payload.SeismicIntensityUnit;
+            if (dataId == DataId.SIValue) return payload.SIValue.Value;
+            if (dataId == DataId.PGA) return payload.PGA.Value;
+            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity.Value;
             throw new NotSupportedException($"{nameof(dataId)}={dataId}");
         }
 
