@@ -20,7 +20,9 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <param name="offset">Payloadの先頭位置のオフセット</param>
         public ErrorResponsePayload(BinaryReader binaryReader, int offset) : base(binaryReader, offset)
         {
-            Code = (ErrorCode)Data[0];
+            // Command+Addressのサイズ移動する
+            binaryReader.BaseStream.Seek(offset + 3, SeekOrigin.Begin);
+            Code = (ErrorCode)binaryReader.ReadByte();
         }
         public override string ToString()
         {

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using Ksnm.ExtensionMethods.System.IO.Stream;
 using UInt8 = System.Byte;
@@ -10,6 +11,27 @@ namespace EnvironmentalSensor.USB.Payloads
     /// </summary>
     public class LatestDataLongResponsePayload : DataLongResponsePayload
     {
+        public override byte[] Data
+        {
+            get
+            {
+                using (var memoryStream = new MemoryStream())
+                using (var binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write(SequenceNumber);
+                    WriteOn(binaryWriter);
+                    var data = memoryStream.ToArray();
+#if DEBUG
+                    if (data.Length != 49)
+                    {
+                        throw new Exception($"{Data.Length} != 49");
+                    }
+#endif
+                    return data;
+                }
+            }
+        }
+
         #region Dataの内容
         /// <summary>
         /// Sequence number は Memory index と非同期の管理番号であり測定毎(1sec 毎)にインクリメントされる．
@@ -29,21 +51,6 @@ namespace EnvironmentalSensor.USB.Payloads
 
             Command = FrameCommand.Read;
             Address = FrameAddress.LatestDataLong;
-
-            UpdateData();
-        }
-        /// <summary>
-        /// Dataメンバーを更新
-        /// </summary>
-        public override void UpdateData()
-        {
-            using (var memoryStream = new MemoryStream())
-            using (var binaryWriter = new BinaryWriter(memoryStream))
-            {
-                binaryWriter.Write(SequenceNumber);
-                WriteOn(binaryWriter);
-                Data = memoryStream.ToArray();
-            }
         }
         /// <summary>
         /// 指定されたストリームから初期化
@@ -52,9 +59,13 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <param name="offset">Payloadの先頭位置のオフセット</param>
         public LatestDataLongResponsePayload(BinaryReader binaryReader, int offset) : base(binaryReader, offset)
         {
-            SequenceNumber = Data[0];
+            // Command+Addressのサイズ移動する
+            binaryReader.BaseStream.Seek(offset + 3, SeekOrigin.Begin);
+            SequenceNumber = binaryReader.ReadByte();
         }
-
+        /// <summary>
+        /// 文字列に変換する
+        /// </summary>
         public override string ToString()
         {
             var text = new StringBuilder();

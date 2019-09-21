@@ -19,7 +19,6 @@ namespace EnvironmentalSensor.USB.Payloads
                 data.AddRange(BitConverter.GetBytes(StartMemoryIndex));
                 data.AddRange(BitConverter.GetBytes(EndMemoryIndex));
                 return data.ToArray();
-
             }
         }
         #region Dataの内容

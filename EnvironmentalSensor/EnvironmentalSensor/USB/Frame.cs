@@ -11,7 +11,7 @@ namespace EnvironmentalSensor.USB
     /// USB 通信の送受信で使用する共通フレーム
     /// マニュアル:4.3. Frame format
     /// </summary>
-    public class Frame
+    public class Frame : IEquatable<Frame>
     {
         /// <summary>
         /// Headerに設定する値
@@ -145,5 +145,47 @@ namespace EnvironmentalSensor.USB
             //Console.WriteLine(message);
 #endif
         }
+
+        #region IEquatable
+        public bool Equals(Frame other)
+        {
+            if (Header != other.Header) { return false; }
+            if (Length != other.Length) { return false; }
+            if (Payload.Equals(other.Payload) == false) { return false; }
+            if (CRC16 != other.CRC16) { return false; }
+            return true;
+        }
+        #endregion IEquatable
+
+        #region object
+        /// <summary>
+        /// 指定したオブジェクトが、現在のオブジェクトと等しいかどうかを判断します。
+        /// </summary>
+        /// <returns>指定したオブジェクトが現在のオブジェクトと等しい場合は true。それ以外の場合は false。</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            if (obj is Frame)
+            {
+                return Equals((Frame)obj);
+            }
+            return false;
+        }
+        /// <summary>
+        /// このインスタンスのハッシュ コードを返します。
+        /// </summary>
+        public override int GetHashCode()
+        {
+            int hashCode = 0;
+            hashCode ^= Header;
+            hashCode ^= Length;
+            hashCode ^= Payload.GetHashCode();
+            hashCode ^= CRC16;
+            return hashCode;
+        }
+        #endregion object
     }
 }

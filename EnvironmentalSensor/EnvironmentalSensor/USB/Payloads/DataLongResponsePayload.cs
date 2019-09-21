@@ -7,7 +7,7 @@ namespace EnvironmentalSensor.USB.Payloads
     /// <summary>
     /// LatestDataLongResponsePayload,MemoryDataLongResponsePayloadの基底クラス
     /// </summary>
-    public class DataLongResponsePayload : ResponsePayload
+    public class DataLongResponsePayload : ResponsePayload, IEquatable<DataLongResponsePayload>
     {
         /// <summary>
         /// 指定のストリームから初期化
@@ -16,20 +16,23 @@ namespace EnvironmentalSensor.USB.Payloads
         /// <param name="offset">Payloadの先頭位置のオフセット</param>
         public DataLongResponsePayload(BinaryReader binaryReader, int offset) : base(binaryReader, offset)
         {
+            // Command+Addressのサイズ
+            int baseSize = 3;
             if (Address == FrameAddress.LatestDataLong)
             {
                 // SequenceNumber のサイズ分すすめる
-                binaryReader.BaseStream.Seek(offset + sizeof(byte), SeekOrigin.Begin);
+                baseSize += sizeof(byte);
             }
             else if (Address == FrameAddress.MemoryDataLong)
             {
                 // MemoryIndex と TimeCounter のサイズ分すすめる
-                binaryReader.BaseStream.Seek(offset + sizeof(UInt32)+ sizeof(UInt64), SeekOrigin.Begin);
+                baseSize += sizeof(UInt32) + sizeof(UInt64);
             }
             else
             {
                 throw new NotImplementedException($"{nameof(Address)}={Address}");
             }
+            binaryReader.BaseStream.Seek(offset + baseSize, SeekOrigin.Begin);
             Temperature.Raw = binaryReader.ReadInt16();
             RelativeHumidity.Raw = binaryReader.ReadInt16();
             AmbientLight.Raw = binaryReader.ReadInt16();
@@ -222,5 +225,100 @@ namespace EnvironmentalSensor.USB.Payloads
             binaryWriter.Write((Byte)PGAFlag);
             binaryWriter.Write((Byte)SeismicIntensityFlag);
         }
+
+        #region FramePayload
+        public override bool Equals(FramePayload other)
+        {
+            if (other is DataLongResponsePayload)
+            {
+                return Equals(other as DataLongResponsePayload);
+            }
+            return base.Equals(other);
+        }
+        #endregion FramePayload
+
+        #region IEquatable
+        public bool Equals(DataLongResponsePayload other)
+        {
+            if (Temperature.Raw != other.Temperature.Raw) { return false; }
+            if (RelativeHumidity.Raw != other.RelativeHumidity.Raw) { return false; }
+            if (AmbientLight.Raw != other.AmbientLight.Raw) { return false; }
+            if (BarometricPressure.Raw != other.BarometricPressure.Raw) { return false; }
+            if (SoundNoise.Raw != other.SoundNoise.Raw) { return false; }
+            if (eTVOC.Raw != other.eTVOC.Raw) { return false; }
+            if (eCO2.Raw != other.eCO2.Raw) { return false; }
+            if (DiscomfortIndex.Raw != other.DiscomfortIndex.Raw) { return false; }
+            if (HeatStroke.Raw != other.HeatStroke.Raw) { return false; }
+            if (VibrationInformation != other.VibrationInformation) { return false; }
+            if (SIValue.Raw != other.SIValue.Raw) { return false; }
+            if (PGA.Raw != other.PGA.Raw) { return false; }
+            if (SeismicIntensity.Raw != other.SeismicIntensity.Raw) { return false; }
+            if (TemperatureFlag != other.TemperatureFlag) { return false; }
+            if (RelativeHumidityFlag != other.RelativeHumidityFlag) { return false; }
+            if (AmbientLightFlag != other.AmbientLightFlag) { return false; }
+            if (BarometricPressureFlag != other.BarometricPressureFlag) { return false; }
+            if (SoundNoiseFlag != other.SoundNoiseFlag) { return false; }
+            if (eTVOCFlag != other.eTVOCFlag) { return false; }
+            if (eCO2Flag != other.eCO2Flag) { return false; }
+            if (DiscomfortIndexFlag != other.DiscomfortIndexFlag) { return false; }
+            if (HeatStrokeFlag != other.HeatStrokeFlag) { return false; }
+            if (SIValueFlag != other.SIValueFlag) { return false; }
+            if (PGAFlag != other.PGAFlag) { return false; }
+            if (SeismicIntensityFlag != other.SeismicIntensityFlag) { return false; }
+            return true;
+        }
+        #endregion IEquatable
+
+        #region object
+        /// <summary>
+        /// 指定したオブジェクトが、現在のオブジェクトと等しいかどうかを判断します。
+        /// </summary>
+        /// <returns>指定したオブジェクトが現在のオブジェクトと等しい場合は true。それ以外の場合は false。</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            if (obj is DataLongResponsePayload)
+            {
+                return Equals((DataLongResponsePayload)obj);
+            }
+            return false;
+        }
+        /// <summary>
+        /// このインスタンスのハッシュ コードを返します。
+        /// </summary>
+        public override int GetHashCode()
+        {
+            int hashCode = 0;
+            hashCode ^= Temperature.Raw;
+            hashCode ^= RelativeHumidity.Raw;
+            hashCode ^= AmbientLight.Raw;
+            hashCode ^= BarometricPressure.Raw;
+            hashCode ^= SoundNoise.Raw;
+            hashCode ^= eTVOC.Raw;
+            hashCode ^= eCO2.Raw;
+            hashCode ^= DiscomfortIndex.Raw;
+            hashCode ^= HeatStroke.Raw;
+            hashCode ^= VibrationInformation;
+            hashCode ^= SIValue.Raw;
+            hashCode ^= PGA.Raw;
+            hashCode ^= SeismicIntensity.Raw;
+            hashCode ^= TemperatureFlag;
+            hashCode ^= RelativeHumidityFlag;
+            hashCode ^= AmbientLightFlag;
+            hashCode ^= BarometricPressureFlag;
+            hashCode ^= SoundNoiseFlag;
+            hashCode ^= eTVOCFlag;
+            hashCode ^= eCO2Flag;
+            hashCode ^= DiscomfortIndexFlag;
+            hashCode ^= HeatStrokeFlag;
+            hashCode ^= SIValueFlag;
+            hashCode ^= PGAFlag;
+            hashCode ^= SeismicIntensityFlag;
+            return hashCode;
+        }
+        #endregion object
     }
 }
