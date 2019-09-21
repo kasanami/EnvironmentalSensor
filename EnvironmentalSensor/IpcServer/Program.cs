@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
+using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,6 +44,9 @@ namespace IpcServer
 
         static void Main(string[] args)
         {
+            // リース期間を無限に設定(ゼロで無限になる)
+            LifetimeServices.LeaseTime = TimeSpan.Zero;
+
             var portName = "";
             while (true)
             {
