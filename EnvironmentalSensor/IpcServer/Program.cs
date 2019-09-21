@@ -25,7 +25,7 @@ namespace IpcServer
         static SerialPort serialPort = new SerialPort();
         static byte[] readBuffer = new byte[serialPort.ReadBufferSize];
 
-        static Server server = new Server();
+        static Server server;
         #endregion 通信関係
 
         #region ログ関係
@@ -44,8 +44,15 @@ namespace IpcServer
 
         static void Main(string[] args)
         {
+#if false
+            Console.WriteLine($"{nameof(LifetimeServices.LeaseManagerPollTime)}={LifetimeServices.LeaseManagerPollTime}");
+            Console.WriteLine($"{nameof(LifetimeServices.LeaseTime)}={LifetimeServices.LeaseTime}");
+            Console.WriteLine($"{nameof(LifetimeServices.RenewOnCallTime)}={LifetimeServices.RenewOnCallTime}");
+            Console.WriteLine($"{nameof(LifetimeServices.SponsorshipTimeout)}={LifetimeServices.SponsorshipTimeout}");
+#endif
             // リース期間を無限に設定(ゼロで無限になる)
             LifetimeServices.LeaseTime = TimeSpan.Zero;
+            server = new Server();
 
             var portName = "";
             while (true)
