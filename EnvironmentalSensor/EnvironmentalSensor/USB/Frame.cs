@@ -16,7 +16,11 @@ namespace EnvironmentalSensor.USB
         /// <summary>
         /// Headerに設定する値
         /// </summary>
-        const ushort MagicNumber = 0x4252;
+        public const ushort MagicNumber = 0x4252;
+        /// <summary>
+        /// 最小サイズ（Header+Length+CRC）
+        /// </summary>
+        public const int MinimumSize = sizeof(ushort) + sizeof(ushort) + sizeof(ushort);
         /// <summary>
         /// ASCII コードの”BR”(0x4252)で固定とする
         /// </summary>
@@ -51,13 +55,11 @@ namespace EnvironmentalSensor.USB
             using (var binaryReader = new BinaryReader(memoryStream))
             {
                 // データ長チェック
+                if (count < MinimumSize)
                 {
-                    var requestedLength = TopSize + CRC16Size;
-                    if (count < requestedLength)
-                    {
-                        throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(count)}={count} {nameof(requestedLength)}={requestedLength }");
-                    }
+                    throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(count)}={count} {nameof(MinimumSize)}={MinimumSize}");
                 }
+                // 
                 Header = binaryReader.ReadUInt16();
 
                 DebugWriteLine($"{nameof(Header)}={Header.ToString("X4")}");
@@ -138,12 +140,40 @@ namespace EnvironmentalSensor.USB
                 return memoryStream.ToArray();
             }
         }
-
+        /// <summary>
+        /// デバッグ出力
+        /// </summary>
         static void DebugWriteLine(string message)
         {
 #if DEBUG
             //Console.WriteLine(message);
 #endif
+        }
+
+        public static int GetLength(byte[] buffer)
+        {
+            const int TopSize = 4;
+            const int CRC16Size = 2;
+            using (var memoryStream = new MemoryStream(buffer, false))
+            using (var binaryReader = new BinaryReader(memoryStream))
+            {
+                // データ長チェック
+                {
+                    var requestedLength = TopSize + CRC16Size;
+                    if (buffer.Length < requestedLength)
+                    {
+                        throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(buffer.Length)}={buffer.Length} {nameof(requestedLength)}={requestedLength }");
+                    }
+                }
+                var header = binaryReader.ReadUInt16();
+
+                if (header != MagicNumber)
+                {
+                    // 対応してるデータではない
+                    throw new NotSupportedException($"Header={header.ToString("X4")}");
+                }
+                return binaryReader.ReadUInt16();
+            }
         }
 
         #region IEquatable

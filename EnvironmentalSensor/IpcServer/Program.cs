@@ -4,6 +4,7 @@ using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
 using Ksnm.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -23,7 +24,10 @@ namespace IpcServer
 
         #region 通信関係
         static SerialPort serialPort = new SerialPort();
-        static byte[] readBuffer = new byte[serialPort.ReadBufferSize];
+        /// <summary>
+        /// 受信データを蓄積するバッファ
+        /// </summary>
+        static List<byte> serialPortReceivedBuffer = new List<byte>(serialPort.ReadBufferSize);
 
         static Server server;
         #endregion 通信関係
@@ -44,6 +48,9 @@ namespace IpcServer
 
         static void Main(string[] args)
         {
+#if DEBUG
+            RemoveToNextHeaderTest();
+#endif
 #if false
             Console.WriteLine($"{nameof(LifetimeServices.LeaseManagerPollTime)}={LifetimeServices.LeaseManagerPollTime}");
             Console.WriteLine($"{nameof(LifetimeServices.LeaseTime)}={LifetimeServices.LeaseTime}");
@@ -162,6 +169,8 @@ namespace IpcServer
         {
             DebugWriteLine("DataReceived");
 
+            var receivedBuffer = serialPortReceivedBuffer;
+
             var now = DateTime.Now;
             var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
             if (logFilePath != csvLogger.FilePath)
@@ -171,18 +180,17 @@ namespace IpcServer
                 LogHeader();
             }
 
-            byte[] readBytes;
+            byte[] readBuffer = new byte[serialPort.ReadBufferSize];
 
             using (var memoryStream = new MemoryStream())
             {
                 int readSize = 0;
-                DebugWriteLine($"{nameof(serialPort.BytesToRead)}={serialPort.BytesToRead}");
+                DebugWriteLine($"{nameof(serialPort)}.{nameof(serialPort.BytesToRead)}={serialPort.BytesToRead}");
                 while (serialPort.BytesToRead > 0)
                 {
                     try
                     {
                         readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
-                        DebugWriteLine($"{nameof(readSize)}={readSize}");
                         memoryStream.Write(readBuffer, 0, readSize);
                     }
                     catch (Exception ex)
@@ -191,16 +199,18 @@ namespace IpcServer
                         return;
                     }
                 }
-                readBytes = memoryStream.ToArray();
+                // 蓄積
+                receivedBuffer.AddRange(memoryStream.ToArray());
             }
 
-            DebugWriteLine($"{nameof(readBytes.Length)}={readBytes.Length}");
+            DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
 
-            if (readBytes.Length > 0)
+            if (receivedBuffer.Count > Frame.MinimumSize)
             {
+                var buffer = receivedBuffer.ToArray();
                 try
                 {
-                    var frame = new Frame(readBytes, 0, readBytes.Length);
+                    var frame = new Frame(buffer, 0, buffer.Length);
                     // リモートオブジェクトに設定
                     server.RemoteObject.Set(frame.Payload);
                     // ログに出力
@@ -214,6 +224,8 @@ namespace IpcServer
                         var payload = frame.Payload as LatestDataLongResponsePayload;
                         Log(now, payload);
                     }
+                    // 読み込み済みデータを削除
+                    receivedBuffer.RemoveRange(0, frame.Length + 4);
                 }
                 catch (NotSupportedException)
                 {
@@ -221,7 +233,7 @@ namespace IpcServer
                 }
                 catch (DamagedDataException ex)
                 {
-                    LogDamagedData(now, ex.Message, readBytes, readBytes.Length);
+                    LogDamagedData(now, ex.Message, buffer, buffer.Length);
                 }
                 catch (Exception ex)
                 {
@@ -229,9 +241,55 @@ namespace IpcServer
                     Console.WriteLine(ex.Message);
                     Console.WriteLine(ex.StackTrace);
                 }
+                // 次のヘッダーまでを削除
+                RemoveToNextHeader(receivedBuffer);
+            }
+            DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
+        }
+        /// <summary>
+        /// 次のヘッダーまでを削除
+        /// ヘッダーが無い場合は、すべて削除
+        /// </summary>
+        /// <param name="buffer"></param>
+        static int IndexOfNextHeader(IReadOnlyList<byte> buffer)
+        {
+            var magicNumber = BitConverter.GetBytes(Frame.MagicNumber);
+            for (int i = 0; i < buffer.Count - 1; i++)
+            {
+                if (buffer[i] == magicNumber[0])
+                {
+                    if (buffer[i + 1] == magicNumber[1])
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+        /// <summary>
+        /// 次のヘッダーまでを削除
+        /// ヘッダーが無い場合は、すべて削除
+        /// </summary>
+        /// <param name="buffer"></param>
+        static void RemoveToNextHeader(List<byte> buffer)
+        {
+            var count = IndexOfNextHeader(buffer);
+            if (count == 0)
+            {
+                // 今の位置がヘッダーなら何もしない
+            }
+            else if (count < 0)
+            {
+                // ヘッダーが無いならクリア
+                buffer.Clear();
+            }
+            else
+            {
+                buffer.RemoveRange(0, count);
             }
         }
         #endregion SerialPort
+        #region Log
         static void LogHeader()
         {
             csvLogger.AppendLine(
@@ -343,12 +401,42 @@ namespace IpcServer
                 $"{payload.SeismicIntensityFlag}"
                 );
         }
-
+        #endregion Log
+        #region Debug
         static void DebugWriteLine(string message)
         {
 #if DEBUG
             Console.WriteLine(message);
 #endif
         }
+#if DEBUG
+        /// <summary>
+        /// RemoveToNextHeader関数のテスト
+        /// </summary>
+        static void RemoveToNextHeaderTest()
+        {
+            var magicNumber = BitConverter.GetBytes(Frame.MagicNumber);
+            var random = new Random();
+            var buffer = new byte[20];
+            random.NextBytes(buffer);
+            // ヘッダーが無い場合すべて削除
+            var list = new List<byte>(buffer);
+            RemoveToNextHeader(list);
+            Debug.Assert(list.Count == 0);
+            // 
+            buffer[10] = magicNumber[0];
+            buffer[11] = magicNumber[1];
+            list = new List<byte>(buffer);
+            RemoveToNextHeader(list);
+            Debug.Assert(list.Count == buffer.Length - 10);
+            // 先頭の場合、何もしない
+            buffer[0] = magicNumber[0];
+            buffer[1] = magicNumber[1];
+            list = new List<byte>(buffer);
+            RemoveToNextHeader(list);
+            Debug.Assert(list.Count == buffer.Length);
+        }
+#endif
+        #endregion Debug
     }
 }
