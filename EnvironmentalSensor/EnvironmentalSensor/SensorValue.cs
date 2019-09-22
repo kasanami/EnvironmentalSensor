@@ -1,16 +1,12 @@
 ﻿using Ksnm.ExtensionMethods.System.Comparable;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EnvironmentalSensor
 {
     /// <summary>
     /// センサーの値
     /// </summary>
-    public class SensorValue
+    public class SensorValue : MarshalByRefObject
     {
         int raw;
         /// <summary>
