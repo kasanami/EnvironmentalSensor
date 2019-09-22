@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -112,16 +113,16 @@ namespace DemoApp
                         remoteObject.UpdateCompleted)
                     {
                         // 最後の取得時刻から最新時刻までを、グラフに表示
-                        foreach (var item in remoteObject.Payloads)
+                        // 時刻でソートする
+                        foreach (var item in remoteObject.Payloads
+                            .Where(item => item.Key > lastTimeStamp)
+                            .OrderBy(item => item.Key))
                         {
-                            if (item.Key > lastTimeStamp)
+                            var dateTime = DateTime.FromBinary(item.Key);
+                            var payload = item.Value;
+                            if (payload is LatestDataLongResponsePayload)
                             {
-                                var dateTime = DateTime.FromBinary(item.Key);
-                                var payload = item.Value;
-                                if (payload is LatestDataLongResponsePayload)
-                                {
-                                    AddChartData(dateTime, payload as LatestDataLongResponsePayload);
-                                }
+                                AddChartData(dateTime, payload as LatestDataLongResponsePayload);
                             }
                         }
                         // 表は最新時刻のみ表示
