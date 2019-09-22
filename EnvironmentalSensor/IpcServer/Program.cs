@@ -68,6 +68,8 @@ namespace IpcServer
             }
             // シリアルポートを設定して通信を開始
             {
+                serialPort.ErrorReceived += SerialPort_ErrorReceived;
+                serialPort.PinChanged += SerialPort_PinChanged;
                 serialPort.DataReceived += SerialPort_DataReceived;
                 /// マニュアル:4.1. Communication specification
                 serialPort.BaudRate = 115200;
@@ -112,6 +114,7 @@ namespace IpcServer
             // 終了
             serialPort.Close();
         }
+        #region SerialPort
         /// <summary>
         /// 定期的にデータを取得
         /// </summary>
@@ -139,10 +142,26 @@ namespace IpcServer
             }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        private static void SerialPort_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        {
+            DebugWriteLine("ErrorReceived");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void SerialPort_PinChanged(object sender, SerialPinChangedEventArgs e)
+        {
+            DebugWriteLine("PinChanged");
+        }
+        /// <summary>
         /// データが受信された
         /// </summary>
         private static void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            DebugWriteLine("DataReceived");
+
             var now = DateTime.Now;
             var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
             if (logFilePath != csvLogger.FilePath)
@@ -151,16 +170,37 @@ namespace IpcServer
                 csvLogger = new CsvLogger(logFilePath);
                 LogHeader();
             }
-            var readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
 
-            DebugWriteLine("DataReceived");
-            DebugWriteLine($"readSize={readSize}");
+            byte[] readBytes;
 
-            if (readSize > 0)
+            using (var memoryStream = new MemoryStream())
+            {
+                int readSize = 0;
+                DebugWriteLine($"{nameof(serialPort.BytesToRead)}={serialPort.BytesToRead}");
+                while (serialPort.BytesToRead > 0)
+                {
+                    try
+                    {
+                        readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
+                        DebugWriteLine($"{nameof(readSize)}={readSize}");
+                        memoryStream.Write(readBuffer, 0, readSize);
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugWriteLine($"{ex.Message}\n{ex.ToString()}");
+                        return;
+                    }
+                }
+                readBytes = memoryStream.ToArray();
+            }
+
+            DebugWriteLine($"{nameof(readBytes.Length)}={readBytes.Length}");
+
+            if (readBytes.Length > 0)
             {
                 try
                 {
-                    var frame = new Frame(readBuffer, 0, readSize);
+                    var frame = new Frame(readBytes, 0, readBytes.Length);
                     // リモートオブジェクトに設定
                     server.RemoteObject.Set(frame.Payload);
                     // ログに出力
@@ -181,7 +221,7 @@ namespace IpcServer
                 }
                 catch (DamagedDataException ex)
                 {
-                    LogDamagedData(now, ex.Message, readBuffer, readSize);
+                    LogDamagedData(now, ex.Message, readBytes, readBytes.Length);
                 }
                 catch (Exception ex)
                 {
@@ -191,6 +231,7 @@ namespace IpcServer
                 }
             }
         }
+        #endregion SerialPort
         static void LogHeader()
         {
             csvLogger.AppendLine(
@@ -306,7 +347,7 @@ namespace IpcServer
         static void DebugWriteLine(string message)
         {
 #if DEBUG
-            //Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
         }
     }
