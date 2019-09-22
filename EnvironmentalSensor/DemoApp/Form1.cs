@@ -62,7 +62,6 @@ namespace DemoApp
                 disconnectButton.Enabled = true;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
-                measurementCheckBox.Enabled = true;
             }
             else
             {
@@ -72,8 +71,6 @@ namespace DemoApp
                 disconnectButton.Enabled = false;
                 memoryDataLongGetButton.Enabled = false;
                 memoryIndexGetButton.Enabled = false;
-                measurementCheckBox.Enabled = false;
-                measurementCheckBox.Checked = false;
             }
         }
 
@@ -158,11 +155,13 @@ namespace DemoApp
         private void DataFromSensorRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             UpdateUI();
+            measurementCheckBox.Checked = false;
         }
 
         private void DataFromServerRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             UpdateUI();
+            measurementCheckBox.Checked = false;
         }
 
         /// <summary>
@@ -199,6 +198,7 @@ namespace DemoApp
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             serialPort.Close();
+            measurementCheckBox.Checked = false;
             UpdateUI();
         }
 
@@ -327,24 +327,41 @@ namespace DemoApp
             PGA,
             SeismicIntensity,
         }
-        Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
+        static readonly Dictionary<DataId, double> DataScales = new Dictionary<DataId, double>()
         {
-            {DataId.SequenceNumber, "シーケンス番号[x0.1]"},
+            {DataId.SequenceNumber      , 0.1},
+            {DataId.Temperature         , 1},
+            {DataId.RelativeHumidity    , 1},
+            {DataId.AmbientLight        , 1},
+            {DataId.BarometricPressure  , 0.1},
+            {DataId.SoundNoise          , 1},
+            {DataId.eTVOC               , 0.03},
+            {DataId.eCO2                , 0.03},
+            {DataId.DiscomfortIndex     , 1},
+            {DataId.HeatStroke          , 1},
+            {DataId.VibrationInformation, 1},
+            {DataId.SIValue             , 0.6},
+            {DataId.PGA                 , 0.6},
+            {DataId.SeismicIntensity    , 1},
+        };
+        static readonly Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
+        {
+            {DataId.SequenceNumber, "シーケンス番号"},
             {DataId.Temperature, "温度[℃]"},
             {DataId.RelativeHumidity, "相対湿度[％]"},
             {DataId.AmbientLight, "環境光[ルクス]"},
             {DataId.BarometricPressure, "気圧[hPa]"},
-            {DataId.SoundNoise, "雑音[dBx100]"},
-            {DataId.eTVOC, "総揮発性有機化学物量相当値[ppd x0.01]"},
-            {DataId.eCO2, "二酸化炭素換算の数値[ppm x0.1]"},
+            {DataId.SoundNoise, "雑音[dB]"},
+            {DataId.eTVOC, "総揮発性有機化学物量相当値[ppd]"},
+            {DataId.eCO2, "二酸化炭素換算の数値[ppm]"},
             {DataId.DiscomfortIndex, "不快指数"},
             {DataId.HeatStroke, "熱中症警戒度[℃]"},
-            {DataId.VibrationInformation, "振動情報[x0.1]"},
+            {DataId.VibrationInformation, "振動情報"},
             {DataId.SIValue, "スペクトル強度[kine]"},
             {DataId.PGA, "PGA"},
             {DataId.SeismicIntensity, "SeismicIntensity"},
         };
-        Dictionary<DataId, Color> DataColors = new Dictionary<DataId, Color>()
+        static readonly Dictionary<DataId, Color> DataColors = new Dictionary<DataId, Color>()
         {
             {DataId.SequenceNumber, Color.Black},
             {DataId.Temperature, Color.Red},
@@ -372,7 +389,7 @@ namespace DemoApp
             dataChart.Series.Clear();
             foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
             {
-                var dataName = DataNames[dataId];
+                var dataName = DataNames[dataId] + "x" + DataScales[dataId].ToString();
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
                 if (dataId == DataId.SequenceNumber)
@@ -396,7 +413,7 @@ namespace DemoApp
         }
         void AddChartData(DateTime dateTime, LatestDataLongResponsePayload payload)
         {
-            Console.WriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}" );
+            Console.WriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}");
             if (dataChart.InvokeRequired)
             {
                 var _delegate = new AddChartDataDelegate(AddChartData);
@@ -410,7 +427,8 @@ namespace DemoApp
                 foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
                 {
                     var points = dataSeries[dataId].Points;
-                    points.AddXY(x, GetDataFromId(payload, dataId));
+                    var scale = DataScales[dataId];
+                    points.AddXY(x, GetDataFromId(payload, dataId) * scale);
                 }
             }
         }
@@ -418,20 +436,20 @@ namespace DemoApp
 
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
-            if (dataId == DataId.SequenceNumber) return payload.SequenceNumber / (double)byte.MaxValue;
-            if (dataId == DataId.Temperature) return payload.Temperature.Value / payload.Temperature.Max;
-            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity.Value / payload.RelativeHumidity.Max;
-            if (dataId == DataId.AmbientLight) return payload.AmbientLight.Value / payload.AmbientLight.Max;
-            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure.Value / payload.BarometricPressure.Max;
-            if (dataId == DataId.SoundNoise) return payload.SoundNoise.Value / payload.SoundNoise.Max;
-            if (dataId == DataId.eTVOC) return payload.eTVOC.Value / payload.eTVOC.Max;
-            if (dataId == DataId.eCO2) return payload.eCO2.Value / payload.eCO2.Max;
-            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex.Value / payload.DiscomfortIndex.Max;
-            if (dataId == DataId.HeatStroke) return payload.HeatStroke.Value / payload.HeatStroke.Max;
+            if (dataId == DataId.SequenceNumber) return payload.SequenceNumber;
+            if (dataId == DataId.Temperature) return payload.Temperature.Value;
+            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity.Value;
+            if (dataId == DataId.AmbientLight) return payload.AmbientLight.Value;
+            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure.Value;
+            if (dataId == DataId.SoundNoise) return payload.SoundNoise.Value;
+            if (dataId == DataId.eTVOC) return payload.eTVOC.Value;
+            if (dataId == DataId.eCO2) return payload.eCO2.Value;
+            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex.Value;
+            if (dataId == DataId.HeatStroke) return payload.HeatStroke.Value;
             if (dataId == DataId.VibrationInformation) return payload.VibrationInformation;
-            if (dataId == DataId.SIValue) return payload.SIValue.Value / payload.SIValue.Max;
-            if (dataId == DataId.PGA) return payload.PGA.Value / payload.PGA.Max;
-            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity.Value / payload.SeismicIntensity.Max;
+            if (dataId == DataId.SIValue) return payload.SIValue.Value;
+            if (dataId == DataId.PGA) return payload.PGA.Value;
+            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity.Value;
             throw new NotSupportedException($"{nameof(dataId)}={dataId}");
         }
 
