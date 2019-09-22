@@ -108,7 +108,8 @@ namespace DemoApp
                     Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
                     Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
                     // 最後の取得より以降なら描画更新
-                    if (lastTimeStamp < remoteObject.TimeStampBinary)
+                    if (lastTimeStamp < remoteObject.TimeStampBinary &&
+                        remoteObject.UpdateCompleted)
                     {
                         // 最後の取得時刻から最新時刻までを、グラフに表示
                         foreach (var item in remoteObject.Payloads)
@@ -394,7 +395,7 @@ namespace DemoApp
         }
         void AddChartData(DateTime dateTime, LatestDataLongResponsePayload payload)
         {
-            Console.WriteLine(nameof(AddChartData));
+            Console.WriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}" );
             if (dataChart.InvokeRequired)
             {
                 var _delegate = new AddChartDataDelegate(AddChartData);
@@ -416,20 +417,20 @@ namespace DemoApp
 
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
-            if (dataId == DataId.SequenceNumber) return payload.SequenceNumber * 0.1;
-            if (dataId == DataId.Temperature) return payload.Temperature.Value;
-            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity.Value;
-            if (dataId == DataId.AmbientLight) return payload.AmbientLight.Value;
-            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure.Value;
-            if (dataId == DataId.SoundNoise) return payload.SoundNoise.Value;
-            if (dataId == DataId.eTVOC) return payload.eTVOC.Value;
-            if (dataId == DataId.eCO2) return payload.eCO2.Value;
-            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex.Value;
-            if (dataId == DataId.HeatStroke) return payload.HeatStroke.Value;
-            if (dataId == DataId.VibrationInformation) return payload.VibrationInformation * 0.1;
-            if (dataId == DataId.SIValue) return payload.SIValue.Value;
-            if (dataId == DataId.PGA) return payload.PGA.Value;
-            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity.Value;
+            if (dataId == DataId.SequenceNumber) return payload.SequenceNumber / (double)byte.MaxValue;
+            if (dataId == DataId.Temperature) return payload.Temperature.Value / payload.Temperature.Max;
+            if (dataId == DataId.RelativeHumidity) return payload.RelativeHumidity.Value / payload.RelativeHumidity.Max;
+            if (dataId == DataId.AmbientLight) return payload.AmbientLight.Value / payload.AmbientLight.Max;
+            if (dataId == DataId.BarometricPressure) return payload.BarometricPressure.Value / payload.BarometricPressure.Max;
+            if (dataId == DataId.SoundNoise) return payload.SoundNoise.Value / payload.SoundNoise.Max;
+            if (dataId == DataId.eTVOC) return payload.eTVOC.Value / payload.eTVOC.Max;
+            if (dataId == DataId.eCO2) return payload.eCO2.Value / payload.eCO2.Max;
+            if (dataId == DataId.DiscomfortIndex) return payload.DiscomfortIndex.Value / payload.DiscomfortIndex.Max;
+            if (dataId == DataId.HeatStroke) return payload.HeatStroke.Value / payload.HeatStroke.Max;
+            if (dataId == DataId.VibrationInformation) return payload.VibrationInformation;
+            if (dataId == DataId.SIValue) return payload.SIValue.Value / payload.SIValue.Max;
+            if (dataId == DataId.PGA) return payload.PGA.Value / payload.PGA.Max;
+            if (dataId == DataId.SeismicIntensity) return payload.SeismicIntensity.Value / payload.SeismicIntensity.Max;
             throw new NotSupportedException($"{nameof(dataId)}={dataId}");
         }
 
