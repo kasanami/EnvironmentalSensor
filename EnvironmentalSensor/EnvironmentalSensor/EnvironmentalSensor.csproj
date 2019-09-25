@@ -62,6 +62,7 @@
     <Compile Include="USB\Payloads\MemoryDataLongCommandPayload.cs" />
     <Compile Include="USB\Payloads\MemoryDataLongResponsePayload.cs" />
     <Compile Include="USB\Payloads\ResponsePayload.cs" />
+    <Compile Include="USB\Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

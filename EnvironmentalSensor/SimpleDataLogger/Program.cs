@@ -8,6 +8,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static EnvironmentalSensor.USB.Utility;
 
 namespace SimpleDataLogger
 {
@@ -44,12 +45,7 @@ namespace SimpleDataLogger
                 }
             }
             serialPort.DataReceived += SerialPort_DataReceived;
-            /// マニュアル:4.1. Communication specification
-            serialPort.BaudRate = 115200;
-            serialPort.DataBits = 8;
-            serialPort.StopBits = StopBits.One;
-            serialPort.Parity = Parity.None;
-            serialPort.Handshake = Handshake.None;// フロー制御：None
+            SettingSerialPort(serialPort);
             serialPort.PortName = portName;
             serialPort.Open();
             // 
@@ -211,19 +207,19 @@ namespace SimpleDataLogger
                 $"{now.ToString(DateTimeFormat)}," +
                 $"LatestDataLong," +
                 $"{payload.SequenceNumber}," +
-                $"{payload.Temperature * 0.01}," +
-                $"{payload.RelativeHumidity * 0.01}," +
+                $"{payload.Temperature}," +
+                $"{payload.RelativeHumidity}," +
                 $"{payload.AmbientLight}," +
-                $"{payload.BarometricPressure * 0.001}," +
-                $"{payload.SoundNoise * 0.01}," +
+                $"{payload.BarometricPressure}," +
+                $"{payload.SoundNoise}," +
                 $"{payload.eTVOC}," +
                 $"{payload.eCO2}," +
-                $"{payload.DiscomfortIndex * 0.01}," +
-                $"{payload.HeatStroke * 0.01}," +
+                $"{payload.DiscomfortIndex }," +
+                $"{payload.HeatStroke}," +
                 $"{payload.VibrationInformation}," +
-                $"{payload.SIValue * 0.1}," +
-                $"{payload.PGA * 0.1}," +
-                $"{payload.SeismicIntensity * 0.001}," +
+                $"{payload.SIValue}," +
+                $"{payload.PGA}," +
+                $"{payload.SeismicIntensity }," +
                 $"{payload.TemperatureFlag}," +
                 $"{payload.RelativeHumidityFlag}," +
                 $"{payload.AmbientLightFlag}," +

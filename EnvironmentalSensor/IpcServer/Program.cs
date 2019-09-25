@@ -12,6 +12,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static EnvironmentalSensor.USB.Utility;
 
 namespace IpcServer
 {
@@ -81,12 +82,7 @@ namespace IpcServer
                 serialPort.ErrorReceived += SerialPort_ErrorReceived;
                 serialPort.PinChanged += SerialPort_PinChanged;
                 serialPort.DataReceived += SerialPort_DataReceived;
-                /// マニュアル:4.1. Communication specification
-                serialPort.BaudRate = 115200;
-                serialPort.DataBits = 8;
-                serialPort.StopBits = StopBits.One;
-                serialPort.Parity = Parity.None;
-                serialPort.Handshake = Handshake.None;// フロー制御：None
+                SettingSerialPort(serialPort);
                 serialPort.PortName = portName;
                 serialPort.Open();
             }

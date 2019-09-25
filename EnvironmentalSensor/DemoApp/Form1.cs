@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static EnvironmentalSensor.USB.Utility;
 
 namespace DemoApp
 {
@@ -190,12 +191,7 @@ namespace DemoApp
         {
             if (serialPort.IsOpen == false && selectedPort != null)
             {
-                /// マニュアル:4.1. Communication specification
-                serialPort.BaudRate = 115200;
-                serialPort.DataBits = 8;
-                serialPort.StopBits = StopBits.One;
-                serialPort.Parity = Parity.None;
-                serialPort.Handshake = Handshake.None;// フロー制御：None
+                SettingSerialPort(serialPort);
                 serialPort.PortName = selectedPort;
                 serialPort.Open();
             }
