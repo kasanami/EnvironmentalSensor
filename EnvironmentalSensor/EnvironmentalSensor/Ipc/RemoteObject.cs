@@ -3,6 +3,7 @@ using EnvironmentalSensor.USB.Payloads;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace EnvironmentalSensor.Ipc
 {
@@ -12,9 +13,13 @@ namespace EnvironmentalSensor.Ipc
     public class RemoteObject : MarshalByRefObject
     {
         /// <summary>
+        /// RemoteObject用Mutexの名前
+        /// </summary>
+        public const string MutexName = "Local/EnvironmentalSensor.Ipc.RemoteObject";
+        /// <summary>
         /// Payloadsの最大数
         /// </summary>
-        const int PayloadsMaxCount = 256;
+        public const int PayloadsMaxCount = 1024;
         /// <summary>
         /// 情報を設定した日時
         /// </summary>
@@ -41,6 +46,11 @@ namespace EnvironmentalSensor.Ipc
         public void Set(FramePayload payload)
         {
             UpdateCompleted = false;
+
+#if DEBUG
+            // わざと遅延させてデータ更新中にアクセスしていないかチェックしやすくする
+            Thread.Sleep(100);
+#endif
 
             var now = DateTime.Now;
 

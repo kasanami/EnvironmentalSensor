@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -102,9 +103,14 @@ namespace DemoApp
                 try
                 {
                     var remoteObject = IpcClient.GetRemoteObject();
+                    IpcClient.Mutex.WaitOne();
                     Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
                     Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
                     Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
+                    if (remoteObject.UpdateCompleted == false)
+                    {
+                        throw new Exception($"排他制御が正常にできていない {nameof(remoteObject.UpdateCompleted)}==false");
+                    }
                     // 最後の取得より以降なら描画更新
                     if (lastTimeStamp < remoteObject.TimeStampBinary &&
                         remoteObject.UpdateCompleted)
@@ -135,7 +141,12 @@ namespace DemoApp
                 }
                 catch (Exception ex)
                 {
+                    measurementCheckBox.Checked = false;// 継続取得を中断
                     MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
+                }
+                finally
+                {
+                    IpcClient.Mutex.ReleaseMutex();
                 }
             }
         }

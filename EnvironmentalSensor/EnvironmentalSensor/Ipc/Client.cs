@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
+using System.Threading;
 
 namespace EnvironmentalSensor.Ipc
 {
@@ -14,6 +15,10 @@ namespace EnvironmentalSensor.Ipc
         /// チャンネル
         /// </summary>
         IpcClientChannel channel = new IpcClientChannel();
+        /// <summary>
+        /// 排他制御
+        /// </summary>
+        public Mutex Mutex { get; protected set; } = new Mutex(false, RemoteObject.MutexName);
         /// <summary>
         /// チャンネルを登録
         /// </summary>

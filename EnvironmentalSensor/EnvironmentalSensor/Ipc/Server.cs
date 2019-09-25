@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
+using System.Threading;
 
 namespace EnvironmentalSensor.Ipc
 {
@@ -18,6 +19,10 @@ namespace EnvironmentalSensor.Ipc
         /// リモートオブジェクト
         /// </summary>
         public RemoteObject RemoteObject { get; } = new RemoteObject();
+        /// <summary>
+        /// 排他制御
+        /// </summary>
+        public Mutex Mutex { get; protected set; } = new Mutex(false, RemoteObject.MutexName);
         #endregion リモートオブジェクト
         /// <summary>
         /// コンストラクタ

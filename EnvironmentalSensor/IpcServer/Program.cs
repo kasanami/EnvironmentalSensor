@@ -49,7 +49,10 @@ namespace IpcServer
         static void Main(string[] args)
         {
 #if DEBUG
+            Console.WriteLine($"IpcServer DEBUG mode");
             RemoveToNextHeaderTest();
+#else
+            Console.WriteLine($"IpcServer");
 #endif
 #if false
             Console.WriteLine($"{nameof(LifetimeServices.LeaseManagerPollTime)}={LifetimeServices.LeaseManagerPollTime}");
@@ -212,7 +215,15 @@ namespace IpcServer
                 {
                     var frame = new Frame(buffer, 0, buffer.Length);
                     // リモートオブジェクトに設定
-                    server.RemoteObject.Set(frame.Payload);
+                    try
+                    {
+                        server.Mutex.WaitOne();
+                        server.RemoteObject.Set(frame.Payload);
+                    }
+                    finally
+                    {
+                        server.Mutex.ReleaseMutex();
+                    }
                     // ログに出力
                     if (frame.Payload is ErrorResponsePayload)
                     {
