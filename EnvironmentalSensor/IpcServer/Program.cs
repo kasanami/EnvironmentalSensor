@@ -197,13 +197,18 @@ namespace IpcServer
                 }
                 // 蓄積したデータが必要最小サイズを超えたら、フレームオブジェクトに変換しログ出力
                 DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
-                if (receivedBuffer.Count > Frame.MinimumSize)
+                while (receivedBuffer.Count > Frame.MinimumSize)
                 {
                     var size = LogFrame(now, receivedBuffer.ToArray());
                     // 読み込み済みデータを削除
                     if (size > 0)
                     {
                         receivedBuffer.RemoveRange(0, size);
+                    }
+                    else
+                    {
+                        // 中途半端なデータの場合ループを抜ける＝次のデータ受信で続きをする。
+                        break;
                     }
                     // 次のヘッダーまでを削除
                     RemoveToNextHeader(receivedBuffer);
