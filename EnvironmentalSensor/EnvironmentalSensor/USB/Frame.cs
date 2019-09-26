@@ -14,6 +14,14 @@ namespace EnvironmentalSensor.USB
     public class Frame : IEquatable<Frame>
     {
         /// <summary>
+        /// メンバーのHeader+Lengthのバイトサイズ
+        /// </summary>
+        const int TopSize = 4;
+        /// <summary>
+        /// メンバーのCRC16のバイトサイズ
+        /// </summary>
+        const int CRC16Size = 2;
+        /// <summary>
         /// Headerに設定する値
         /// </summary>
         public const ushort MagicNumber = 0x4252;
@@ -49,8 +57,6 @@ namespace EnvironmentalSensor.USB
         /// <param name="count">フレームのバイト数</param>
         public Frame(byte[] buffer, int index, int count)
         {
-            const int TopSize = 4;
-            const int CRC16Size = 2;
             using (var memoryStream = new MemoryStream(buffer, index, count, false))
             using (var binaryReader = new BinaryReader(memoryStream))
             {
@@ -174,6 +180,14 @@ namespace EnvironmentalSensor.USB
                 }
                 return binaryReader.ReadUInt16();
             }
+        }
+        /// <summary>
+        /// 現状のLength値からフレームのバイトサイズを計算
+        /// </summary>
+        /// <returns>計算したバイトサイズ</returns>
+        public int GetSize()
+        {
+            return Length + TopSize;
         }
 
         #region IEquatable

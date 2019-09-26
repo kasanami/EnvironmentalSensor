@@ -5,6 +5,7 @@ using EnvironmentalSensor.USB.Payloads;
 using Ksnm.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -44,7 +45,7 @@ namespace IpcServer
             DamagedData = 0x8000_0000,
             All = 0xFFFF_FFFF,
         }
-        static LogFlags logMode = LogFlags.All;
+        static LogFlags logMode = LogFlags.LatestDataLong | LogFlags.Error;
         #endregion ログ関係
 
         static void Main(string[] args)
@@ -167,91 +168,106 @@ namespace IpcServer
         private static void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             DebugWriteLine("DataReceived");
-
-            var receivedBuffer = serialPortReceivedBuffer;
-
             var now = DateTime.Now;
-            var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
-            if (logFilePath != csvLogger.FilePath)
+            try
             {
-                // 日付が変わったらファイル名変更
-                csvLogger = new CsvLogger(logFilePath);
-                LogHeader();
-            }
-
-            byte[] readBuffer = new byte[serialPort.ReadBufferSize];
-
-            using (var memoryStream = new MemoryStream())
-            {
-                int readSize = 0;
-                DebugWriteLine($"{nameof(serialPort)}.{nameof(serialPort.BytesToRead)}={serialPort.BytesToRead}");
-                while (serialPort.BytesToRead > 0)
+                var logFilePath = $"Logs/{now.ToString("yyyyMMdd")}.csv";
+                if (logFilePath != csvLogger.FilePath)
                 {
-                    try
+                    // 日付が変わったらファイル名変更
+                    csvLogger = new CsvLogger(logFilePath);
+                    LogHeader();
+                }
+
+                // 受信データの蓄積
+                var receivedBuffer = serialPortReceivedBuffer;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    byte[] readBuffer = new byte[serialPort.ReadBufferSize];
+                    int readSize = 0;
+                    DebugWriteLine($"{nameof(serialPort)}.{nameof(serialPort.BytesToRead)}={serialPort.BytesToRead}");
+                    while (serialPort.BytesToRead > 0)
                     {
                         readSize = serialPort.Read(readBuffer, 0, readBuffer.Length);
                         memoryStream.Write(readBuffer, 0, readSize);
                     }
-                    catch (Exception ex)
-                    {
-                        DebugWriteLine($"{ex.Message}\n{ex.ToString()}");
-                        return;
-                    }
+                    // 蓄積
+                    receivedBuffer.AddRange(memoryStream.ToArray());
                 }
-                // 蓄積
-                receivedBuffer.AddRange(memoryStream.ToArray());
+                // 蓄積したデータが必要最小サイズを超えたら、フレームオブジェクトに変換しログ出力
+                DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
+                if (receivedBuffer.Count > Frame.MinimumSize)
+                {
+                    var size = LogFrame(now, receivedBuffer.ToArray());
+                    // 読み込み済みデータを削除
+                    if (size > 0)
+                    {
+                        receivedBuffer.RemoveRange(0, size);
+                    }
+                    // 次のヘッダーまでを削除
+                    RemoveToNextHeader(receivedBuffer);
+                }
+                DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
             }
-
-            DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
-
-            if (receivedBuffer.Count > Frame.MinimumSize)
+            catch (Exception ex)
             {
-                var buffer = receivedBuffer.ToArray();
+                DebugWriteLine($"{now.ToString()}");
+                DebugWriteLine($"{ex.Message}");
+                DebugWriteLine($"{ex.ToString()}");
+            }
+        }
+        /// <summary>
+        /// 受信したデータをフレームオブジェクトに変換し、ログに記録
+        /// </summary>
+        /// <param name="now">受信日時</param>
+        /// <param name="buffer">受信したデータ</param>
+        /// <returns>変換に成功した場合、Frameのバイトサイズを返す。
+        /// 変換に失敗した場合は、0を返す。</returns>
+        static int LogFrame(DateTime now, byte[] buffer)
+        {
+            try
+            {
+                var frame = new Frame(buffer, 0, buffer.Length);
+                // リモートオブジェクトに設定
                 try
                 {
-                    var frame = new Frame(buffer, 0, buffer.Length);
-                    // リモートオブジェクトに設定
-                    try
-                    {
-                        server.Mutex.WaitOne();
-                        server.RemoteObject.Set(frame.Payload);
-                    }
-                    finally
-                    {
-                        server.Mutex.ReleaseMutex();
-                    }
-                    // ログに出力
-                    if (frame.Payload is ErrorResponsePayload)
-                    {
-                        var payload = frame.Payload as ErrorResponsePayload;
-                        Log(now, payload);
-                    }
-                    else if (frame.Payload is LatestDataLongResponsePayload)
-                    {
-                        var payload = frame.Payload as LatestDataLongResponsePayload;
-                        Log(now, payload);
-                    }
-                    // 読み込み済みデータを削除
-                    receivedBuffer.RemoveRange(0, frame.Length + 4);
+                    server.Mutex.WaitOne();
+                    server.RemoteObject.Set(frame.Payload);
                 }
-                catch (NotSupportedException)
+                finally
                 {
-                    // 無視
+                    server.Mutex.ReleaseMutex();
                 }
-                catch (DamagedDataException ex)
+                // ログに出力
+                if (frame.Payload is ErrorResponsePayload)
                 {
-                    LogDamagedData(now, ex.Message, buffer, buffer.Length);
+                    var payload = frame.Payload as ErrorResponsePayload;
+                    Log(now, payload);
                 }
-                catch (Exception ex)
+                else if (frame.Payload is LatestDataLongResponsePayload)
                 {
-                    Console.WriteLine(ex.ToString());
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine(ex.StackTrace);
+                    var payload = frame.Payload as LatestDataLongResponsePayload;
+                    Log(now, payload);
                 }
-                // 次のヘッダーまでを削除
-                RemoveToNextHeader(receivedBuffer);
+                return frame.GetSize();
             }
-            DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
+            catch (NotSupportedException)
+            {
+                // 無視
+            }
+            catch (DamagedDataException ex)
+            {
+                LogDamagedData(now, ex.Message, buffer, buffer.Length);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(now.ToString());
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+            return 0;
         }
         /// <summary>
         /// 次のヘッダーまでを削除
