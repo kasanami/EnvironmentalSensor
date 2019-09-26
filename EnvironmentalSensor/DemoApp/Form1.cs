@@ -100,6 +100,7 @@ namespace DemoApp
             }
             else
             {
+                IntermediateDatas.Clear();
                 // TODO:System.Runtime.Remoting.RemotingException対応
                 try
                 {
@@ -126,15 +127,7 @@ namespace DemoApp
                             var payload = item.Value;
                             if (payload is LatestDataLongResponsePayload)
                             {
-                                AddChartData(dateTime, payload as LatestDataLongResponsePayload);
-                            }
-                        }
-                        // 表は最新時刻のみ表示
-                        {
-                            var payload = remoteObject.Payloads[remoteObject.TimeStampBinary];
-                            if (payload is LatestDataLongResponsePayload)
-                            {
-                                SetLatestListData(payload as LatestDataLongResponsePayload);
+                                IntermediateDatas.Add(dateTime, new IntermediateData(payload as LatestDataLongResponsePayload));
                             }
                         }
                         lastTimeStamp = remoteObject.TimeStampBinary;
@@ -148,6 +141,18 @@ namespace DemoApp
                 finally
                 {
                     IpcClient.Mutex.ReleaseMutex();
+                }
+                // UIに反映
+                {
+                    foreach (var item in IntermediateDatas)
+                    {
+                        AddChartData(item.Key, item.Value);
+                    }
+                    // 表は最新時刻のみ表示
+                    {
+                        var latestTimeStamp = IntermediateDatas.Keys.Max();
+                        SetLatestListData(IntermediateDatas[latestTimeStamp]);
+                    }
                 }
             }
         }
@@ -386,6 +391,23 @@ namespace DemoApp
             {DataId.SeismicIntensity, Color.Blue},
         };
         /// <summary>
+        /// 表示用中間データ
+        /// </summary>
+        struct IntermediateData
+        {
+            public Dictionary<DataId, double> Values;
+            public IntermediateData(LatestDataLongResponsePayload payload)
+            {
+                Values = new Dictionary<DataId, double>();
+                foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+                {
+                    var value = GetDataFromId(payload, dataId);
+                    Values.Add(dataId, value);
+                }
+            }
+        }
+        Dictionary<DateTime, IntermediateData> IntermediateDatas = new Dictionary<DateTime, IntermediateData>();
+        /// <summary>
         /// グラフの基準日時
         /// </summary>
         DateTime StandardDateTime = DateTime.Now;
@@ -420,7 +442,7 @@ namespace DemoApp
         }
         void AddChartData(DateTime dateTime, LatestDataLongResponsePayload payload)
         {
-            Console.WriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}");
+            DebugWriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}");
             if (dataChart.InvokeRequired)
             {
                 var _delegate = new AddChartDataDelegate(AddChartData);
@@ -439,7 +461,29 @@ namespace DemoApp
                 }
             }
         }
+        void AddChartData(DateTime dateTime, IntermediateData data)
+        {
+            if (dataChart.InvokeRequired)
+            {
+                var _delegate = new AddChartDataDelegate2(AddChartData);
+                Invoke(_delegate, new object[] { dateTime, data });
+            }
+            else
+            {
+                var now = dateTime - StandardDateTime;
+                var x = Math.Round(now.TotalSeconds);
+                dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
+                foreach (var item in data.Values)
+                {
+                    var dataId = item.Key;
+                    var points = dataSeries[dataId].Points;
+                    var scale = DataScales[dataId];
+                    points.AddXY(x, item.Value * scale);
+                }
+            }
+        }
         delegate void AddChartDataDelegate(DateTime dateTime, LatestDataLongResponsePayload payload);
+        delegate void AddChartDataDelegate2(DateTime dateTime, IntermediateData payload);
 
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
@@ -477,6 +521,20 @@ namespace DemoApp
                 latestDataGridView[1, (int)dataId].Value = GetDataFromId(payload, dataId);
             }
         }
+        void SetLatestListData(IntermediateData data)
+        {
+            foreach (var item in data.Values)
+            {
+                var dataId = item.Key;
+                latestDataGridView[1, (int)dataId].Value = item.Value;
+            }
+        }
         #endregion データ表示
+        static void DebugWriteLine(string message)
+        {
+#if DEBUG
+            Console.WriteLine(message);
+#endif
+        }
     }
 }
