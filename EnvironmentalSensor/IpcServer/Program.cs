@@ -212,9 +212,10 @@ namespace IpcServer
             }
             catch (Exception ex)
             {
-                DebugWriteLine($"{now.ToString()}");
-                DebugWriteLine($"{ex.Message}");
-                DebugWriteLine($"{ex.ToString()}");
+                Console.WriteLine(now.ToString());
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
         /// <summary>
