@@ -453,6 +453,19 @@ namespace DemoApp
                 dataSeries.Add(dataId, series);
             }
             dataChart.Font = new Font(dataChart.Font.Name, 18);
+            // グラフにスクロールバー表示
+            {
+                int viewStart = 0;
+                int viewSize = 60 * 10;
+                var series = dataSeries[0];
+                var chartArea = dataChart.ChartAreas[series.ChartArea];
+                chartArea.CursorX.AutoScroll = true;
+                chartArea.AxisX.Minimum = viewSize * -100;
+                chartArea.AxisX.Maximum = viewSize * +100;
+                chartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
+                chartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
+                chartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
+            }
         }
         void AddChartData(LatestDataLongResponsePayload payload)
         {
