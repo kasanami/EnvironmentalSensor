@@ -25,6 +25,9 @@ namespace IpcServer
     {
         const string DateTimeFormat = "yyyy/MM/dd HH:mm:ss";
 
+        const string ProhibitionOfMultipleActivationMutexName = "Local/EnvironmentalSensor.IpcServer";
+        static Mutex ProhibitionOfMultipleActivationMutex;
+
         #region 通信関係
         static SerialPort serialPort = new SerialPort();
         /// <summary>
@@ -53,6 +56,7 @@ namespace IpcServer
         {
 #if DEBUG
             Console.WriteLine($"IpcServer DEBUG mode");
+            // 各種テスト
             RemoveToNextHeaderTest();
 #else
             Console.WriteLine($"IpcServer");
@@ -63,6 +67,13 @@ namespace IpcServer
             Console.WriteLine($"{nameof(LifetimeServices.RenewOnCallTime)}={LifetimeServices.RenewOnCallTime}");
             Console.WriteLine($"{nameof(LifetimeServices.SponsorshipTimeout)}={LifetimeServices.SponsorshipTimeout}");
 #endif
+            // 多重を禁止する処理
+            if (Main_ProhibitionOfMultipleActivation() == false)
+            {
+                // 終了
+                return;
+            }
+
             // リース期間を無限に設定(ゼロで無限になる)
             LifetimeServices.LeaseTime = TimeSpan.Zero;
             server = new Server();
@@ -106,7 +117,7 @@ namespace IpcServer
                 {
                     EnvironmentalSensorCommunication(cancellationTokenSource.Token);
                     // 入力待ち
-                    Console.WriteLine("停止するにはなにかキーを入力");
+                    Console.WriteLine("停止するには何かのキーを入力");
                     Console.ReadLine();
                     // 入力されたら停止
                     cancellationTokenSource.Cancel();
@@ -121,6 +132,22 @@ namespace IpcServer
             }
             // 終了
             serialPort.Close();
+        }
+        /// <summary>
+        /// 多重起動の禁止処理
+        /// </summary>
+        /// <returns>trueなら多重起動していないので処理続行。falseなら多重起動しているので終了させる。</returns>
+        static bool Main_ProhibitionOfMultipleActivation()
+        {
+            ProhibitionOfMultipleActivationMutex = new Mutex(false, ProhibitionOfMultipleActivationMutexName);
+            if (ProhibitionOfMultipleActivationMutex.WaitOne(0, false) == false)
+            {
+                Console.WriteLine("多重起動はできません。");
+                Console.WriteLine("何かのキーを押すと終了します。");
+                Console.ReadLine();
+                return false;
+            }
+            return true;
         }
         #region SerialPort
         /// <summary>
