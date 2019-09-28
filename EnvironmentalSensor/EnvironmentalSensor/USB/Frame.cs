@@ -53,6 +53,11 @@ namespace EnvironmentalSensor.USB
         /// 指定のバッファから初期化
         /// </summary>
         /// <param name="buffer">フレームのバッファ</param>
+        public Frame(byte[] buffer) : this(buffer, 0, buffer.Length) { }
+        /// <summary>
+        /// 指定のバッファから初期化
+        /// </summary>
+        /// <param name="buffer">フレームのバッファ</param>
         /// <param name="index">フレームの開始位置</param>
         /// <param name="count">フレームのバイト数</param>
         public Frame(byte[] buffer, int index, int count)
@@ -189,7 +194,63 @@ namespace EnvironmentalSensor.USB
         {
             return Length + TopSize;
         }
-
+        /// <summary>
+        /// バイト列からフレームのサイズを取得する。
+        /// </summary>
+        /// <param name="buffer">フレームのバッファ</param>
+        public static int GetSize(byte[] buffer)
+        {
+            return GetSize(buffer, 0, buffer.Length);
+        }
+        /// <summary>
+        /// バイト列からフレームのサイズを取得する。
+        /// </summary>
+        /// <param name="buffer">フレームのバッファ</param>
+        /// <param name="index">フレームの開始位置</param>
+        /// <param name="count">フレームのバイト数</param>
+        public static int GetSize(byte[] buffer, int index, int count)
+        {
+            using (var memoryStream = new MemoryStream(buffer, index, count, false))
+            using (var binaryReader = new BinaryReader(memoryStream))
+            {
+                // データ長チェック
+                if (count < MinimumSize)
+                {
+                    throw new DamagedDataException($"データ長が 共通フレームの長さに満たない。{nameof(count)}={count} {nameof(MinimumSize)}={MinimumSize}");
+                }
+                // 
+                var header = binaryReader.ReadUInt16();
+                if (header != MagicNumber)
+                {
+                    // 対応してるデータではない
+                    throw new NotSupportedException($"{nameof(header)}={header:X4}");
+                }
+                var length = binaryReader.ReadUInt16();
+                // データ長チェック
+                {
+                    // 本来あるべき全体のサイズ
+                    var requestedLength = length + TopSize;
+                    if (count < requestedLength)
+                    {
+                        throw new DamagedDataException($"データ長が短い。{nameof(count)}={count} {nameof(requestedLength)}={requestedLength}");
+                    }
+                }
+                // CRCチェック
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);// 最初に戻る
+                    var tempBuffer = new byte[length + TopSize - CRC16Size];
+                    memoryStream.Read(tempBuffer, 0, tempBuffer.Length);
+                    var computedCRC16 = crc16.ComputeHash(tempBuffer);
+                    var readCRC16 = binaryReader.ReadUInt16();
+                    if (readCRC16 != computedCRC16)
+                    {
+                        // CRCの結果 データ破損
+                        throw new DamagedDataException($"CRC値の不一致。{nameof(readCRC16)}={readCRC16:X4} {nameof(computedCRC16)}={computedCRC16:X4}");
+                    }
+                }
+                return length + TopSize;
+            }
+        }
         #region IEquatable
         public bool Equals(Frame other)
         {

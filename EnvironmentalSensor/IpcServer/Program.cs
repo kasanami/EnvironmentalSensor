@@ -2,6 +2,7 @@
 using EnvironmentalSensor.Ipc;
 using EnvironmentalSensor.USB;
 using EnvironmentalSensor.USB.Payloads;
+using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using Ksnm.Utilities;
 using System;
 using System.Collections.Generic;
@@ -199,16 +200,44 @@ namespace IpcServer
                 DebugWriteLine($"{nameof(receivedBuffer)}.{nameof(receivedBuffer.Count)}={receivedBuffer.Count}");
                 while (receivedBuffer.Count > Frame.MinimumSize)
                 {
-                    var size = LogFrame(now, receivedBuffer.ToArray());
-                    // 読み込み済みデータを削除
-                    if (size > 0)
+                    try
                     {
-                        receivedBuffer.RemoveRange(0, size);
+                        var buffer = receivedBuffer.ToArray();
+                        var size = Frame.GetSize(buffer);
+                        // リモートオブジェクトに設定
+                        try
+                        {
+                            server.Mutex.WaitOne();
+                            server.RemoteObject.Set(now, buffer, size);
+                        }
+                        finally
+                        {
+                            server.Mutex.ReleaseMutex();
+                        }
+                        //var size = LogFrame(now, receivedBuffer.ToArray());
+                        // 読み込み済みデータを削除
+                        if (size > 0)
+                        {
+                            receivedBuffer.RemoveRange(0, size);
+                        }
+                        else
+                        {
+                            // 中途半端なデータの場合ループを抜ける＝次のデータ受信で続きをする。
+                            break;
+                        }
                     }
-                    else
+                    catch (NotSupportedException)
+                    {
+                        // 無視
+                    }
+                    catch (DamagedDataException)
                     {
                         // 中途半端なデータの場合ループを抜ける＝次のデータ受信で続きをする。
                         break;
+                    }
+                    catch (Exception ex)
+                    {
+                        ConsoleWrite(now, ex);
                     }
                     // 次のヘッダーまでを削除
                     RemoveToNextHeader(receivedBuffer);
@@ -217,10 +246,7 @@ namespace IpcServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(now.ToString());
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                ConsoleWrite(now, ex);
             }
         }
         /// <summary>
@@ -236,6 +262,7 @@ namespace IpcServer
             {
                 var frame = new Frame(buffer, 0, buffer.Length);
                 // リモートオブジェクトに設定
+#if false
                 try
                 {
                     server.Mutex.WaitOne();
@@ -245,6 +272,7 @@ namespace IpcServer
                 {
                     server.Mutex.ReleaseMutex();
                 }
+#endif
                 // ログに出力
                 if (frame.Payload is ErrorResponsePayload)
                 {
@@ -268,10 +296,7 @@ namespace IpcServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(now.ToString());
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                ConsoleWrite(now, ex);
             }
             return 0;
         }
@@ -369,16 +394,11 @@ namespace IpcServer
             {
                 return;
             }
-            var readBufferText = new StringBuilder();
-            for (int i = 0; i < readSize; i++)
-            {
-                readBufferText.Append(readBuffer[i].ToString("X2") + " ");
-            }
             csvLogger.AppendLine(
                 now.ToString(DateTimeFormat),
                 "DamagedData",
                 message,
-                readBufferText.ToString()
+                readBuffer.ToJoinedString(" ", "X2")
                 );
         }
         static void Log(DateTime now, ErrorResponsePayload payload)
@@ -432,6 +452,13 @@ namespace IpcServer
         }
         #endregion Log
         #region Debug
+        static void ConsoleWrite(DateTime now, Exception ex)
+        {
+            Console.WriteLine(now.ToString());
+            Console.WriteLine(ex.ToString());
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+        }
         static void DebugWriteLine(string message)
         {
 #if DEBUG

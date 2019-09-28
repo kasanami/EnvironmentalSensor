@@ -100,28 +100,31 @@ namespace DemoApp
             }
             else
             {
-                IntermediateDatas.Clear();
+                // 受信データ
+                var receivedData = new Dictionary<long, byte[]>();
                 // TODO:System.Runtime.Remoting.RemotingException対応
                 try
                 {
                     var remoteObject = IpcClient.GetRemoteObject();
                     IpcClient.Mutex.WaitOne();
                     Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
-                    Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
+                    //Console.WriteLine($"{nameof(remoteObject.Payloads)}={remoteObject.Payloads.Count}");
                     Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
                     if (remoteObject.UpdateCompleted == false)
                     {
                         throw new Exception($"排他制御が正常にできていない {nameof(remoteObject.UpdateCompleted)}==false");
                     }
-                    // 最後の取得より以降なら描画更新
+                    // 前回の取得日時より後なら取得
                     if (lastTimeStamp < remoteObject.TimeStampBinary &&
                         remoteObject.UpdateCompleted)
                     {
-                        // 最後の取得時刻から最新時刻までを、グラフに表示
-                        // 時刻でソートする
-                        foreach (var item in remoteObject.Payloads
-                            .Where(item => item.Key > lastTimeStamp)
-                            .OrderBy(item => item.Key))
+                        foreach (var key in remoteObject.ReceivedData.Keys)
+                        {
+                            var data = remoteObject.GetReceivedData(key);
+                            receivedData.Add(key, data);
+                        }
+#if false
+                        foreach (var item in remoteObject.Payloads)
                         {
                             var dateTime = DateTime.FromBinary(item.Key);
                             var payload = item.Value;
@@ -130,7 +133,7 @@ namespace DemoApp
                                 IntermediateDatas.Add(dateTime, new IntermediateData(payload as LatestDataLongResponsePayload));
                             }
                         }
-                        lastTimeStamp = remoteObject.TimeStampBinary;
+#endif
                     }
                 }
                 catch (Exception ex)
@@ -144,14 +147,27 @@ namespace DemoApp
                 }
                 // UIに反映
                 {
-                    foreach (var item in IntermediateDatas)
+                    // 最後の取得時刻から最新時刻までを、中間データに追加
+                    // 念の為、時刻でソートもする
+                    foreach (var item in receivedData
+                        .Where(item => item.Key > lastTimeStamp)
+                        .OrderBy(item => item.Key))
                     {
-                        AddChartData(item.Key, item.Value);
+                        var timeStamp = DateTime.FromBinary(item.Key);
+                        var frame = new Frame(item.Value);
+                        var payload = frame.Payload;
+                        if (payload is LatestDataLongResponsePayload)
+                        {
+                            AddChartData(timeStamp, payload as LatestDataLongResponsePayload);
+                        }
+                        IntermediateDatas.Add(timeStamp, new IntermediateData(payload as LatestDataLongResponsePayload));
                     }
                     // 表は最新時刻のみ表示
+                    if (IntermediateDatas.Keys.Count > 0)
                     {
                         var latestTimeStamp = IntermediateDatas.Keys.Max();
                         SetLatestListData(IntermediateDatas[latestTimeStamp]);
+                        lastTimeStamp = latestTimeStamp.ToBinary();
                     }
                 }
             }
