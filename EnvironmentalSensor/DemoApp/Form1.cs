@@ -120,6 +120,10 @@ namespace DemoApp
                 IpcClient.Mutex.WaitOne();
                 Console.WriteLine($"{nameof(remoteObject.TimeStamp)}={remoteObject.TimeStamp.ToString()}");
                 Console.WriteLine($"{nameof(remoteObject.UpdateCompleted)}={remoteObject.UpdateCompleted}");
+#if DEBUG
+                // わざと遅延させてデータ更新中にアクセスしていないかチェックしやすくする
+                Thread.Sleep(100);
+#endif
                 if (remoteObject.UpdateCompleted == false)
                 {
                     throw new Exception($"排他制御が正常にできていない {nameof(remoteObject.UpdateCompleted)}==false");
