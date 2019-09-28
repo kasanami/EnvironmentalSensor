@@ -203,18 +203,21 @@ namespace IpcServer
                     try
                     {
                         var buffer = receivedBuffer.ToArray();
-                        var size = Frame.GetSize(buffer);
+                        // フレームオブジェクトに変換
+                        var frame = new Frame(buffer);
+                        var size = frame.GetSize();
                         // リモートオブジェクトに設定
                         try
                         {
                             server.Mutex.WaitOne();
-                            server.RemoteObject.Set(now, buffer, size);
+                            server.RemoteObject.SetReceivedData(now, buffer, size);
                         }
                         finally
                         {
                             server.Mutex.ReleaseMutex();
                         }
-                        //var size = LogFrame(now, receivedBuffer.ToArray());
+                        // ログに出力
+                        LogFrame(now, frame);
                         // 読み込み済みデータを削除
                         if (size > 0)
                         {
@@ -250,55 +253,22 @@ namespace IpcServer
             }
         }
         /// <summary>
-        /// 受信したデータをフレームオブジェクトに変換し、ログに記録
+        /// フレームの情報をログに出力
         /// </summary>
         /// <param name="now">受信日時</param>
-        /// <param name="buffer">受信したデータ</param>
-        /// <returns>変換に成功した場合、Frameのバイトサイズを返す。
-        /// 変換に失敗した場合は、0を返す。</returns>
-        static int LogFrame(DateTime now, byte[] buffer)
+        /// <param name="frame">受信したフレーム</param>
+        static void LogFrame(DateTime now, Frame frame)
         {
-            try
+            if (frame.Payload is ErrorResponsePayload)
             {
-                var frame = new Frame(buffer, 0, buffer.Length);
-                // リモートオブジェクトに設定
-#if false
-                try
-                {
-                    server.Mutex.WaitOne();
-                    server.RemoteObject.Set(frame.Payload);
-                }
-                finally
-                {
-                    server.Mutex.ReleaseMutex();
-                }
-#endif
-                // ログに出力
-                if (frame.Payload is ErrorResponsePayload)
-                {
-                    var payload = frame.Payload as ErrorResponsePayload;
-                    Log(now, payload);
-                }
-                else if (frame.Payload is LatestDataLongResponsePayload)
-                {
-                    var payload = frame.Payload as LatestDataLongResponsePayload;
-                    Log(now, payload);
-                }
-                return frame.GetSize();
+                var payload = frame.Payload as ErrorResponsePayload;
+                Log(now, payload);
             }
-            catch (NotSupportedException)
+            else if (frame.Payload is LatestDataLongResponsePayload)
             {
-                // 無視
+                var payload = frame.Payload as LatestDataLongResponsePayload;
+                Log(now, payload);
             }
-            catch (DamagedDataException ex)
-            {
-                LogDamagedData(now, ex.Message, buffer, buffer.Length);
-            }
-            catch (Exception ex)
-            {
-                ConsoleWrite(now, ex);
-            }
-            return 0;
         }
         /// <summary>
         /// 次のヘッダーまでを削除
