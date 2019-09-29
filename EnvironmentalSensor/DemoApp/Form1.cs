@@ -425,10 +425,7 @@ namespace DemoApp
             }
         }
         Dictionary<DateTime, IntermediateData> IntermediateDatas = new Dictionary<DateTime, IntermediateData>();
-        /// <summary>
-        /// グラフの基準日時
-        /// </summary>
-        DateTime StandardDateTime = DateTime.Now;
+
         Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
         const int ChartPointsMaxCount = 20;
         /// <summary>
@@ -436,6 +433,12 @@ namespace DemoApp
         /// </summary>
         ChartArea dataChartArea;
         int dataChartArea_ViewSize = 60 * 10;
+
+        static double DateTimeToSeconds(DateTime dateTime)
+        {
+            return dateTime.Ticks / 10000000;
+        }
+
         void InitializeChartData()
         {
             dataChart.Series.Clear();
@@ -465,8 +468,8 @@ namespace DemoApp
                 var series = dataSeries[0];
                 dataChartArea = dataChart.ChartAreas[series.ChartArea];
                 dataChartArea.CursorX.AutoScroll = true;
-                dataChartArea.AxisX.Minimum = viewSize * -10;
-                dataChartArea.AxisX.Maximum = viewSize * +100;
+                dataChartArea.AxisX.Minimum = DateTimeToSeconds(DateTime.Now);
+                dataChartArea.AxisX.Maximum = DateTimeToSeconds(DateTime.Now);
                 dataChartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
                 dataChartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
                 dataChartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
@@ -486,9 +489,17 @@ namespace DemoApp
             }
             else
             {
-                var now = dateTime - StandardDateTime;
-                var x = Math.Round(now.TotalSeconds);
+                var x = DateTimeToSeconds(dateTime);
                 var viewEnd = x;
+                // グラフの表示範囲の指定
+                if (dataChartArea.AxisX.Minimum > x)
+                {
+                    dataChartArea.AxisX.Minimum = x;
+                }
+                if (dataChartArea.AxisX.Minimum < x)
+                {
+                    dataChartArea.AxisX.Maximum = x;
+                }
                 //dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
                 dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
                 foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
@@ -508,8 +519,7 @@ namespace DemoApp
             }
             else
             {
-                var now = dateTime - StandardDateTime;
-                var x = Math.Round(now.TotalSeconds);
+                var x = DateTimeToSeconds(dateTime);
                 dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
                 foreach (var item in data.Values)
                 {
