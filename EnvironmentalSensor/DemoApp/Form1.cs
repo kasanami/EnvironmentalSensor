@@ -163,13 +163,13 @@ namespace DemoApp
                     {
                         AddChartData(timeStamp, payload as LatestDataLongResponsePayload);
                     }
-                    IntermediateDatas.Add(timeStamp, new IntermediateData(payload as LatestDataLongResponsePayload));
+                    IntermediateDataHistory.Add(timeStamp, new IntermediateData(payload as LatestDataLongResponsePayload));
                 }
                 // 表は最新時刻のみ表示
-                if (IntermediateDatas.Keys.Count > 0)
+                if (IntermediateDataHistory.Keys.Count > 0)
                 {
-                    var latestTimeStamp = IntermediateDatas.Keys.Max();
-                    SetLatestListData(IntermediateDatas[latestTimeStamp]);
+                    var latestTimeStamp = IntermediateDataHistory.Keys.Max();
+                    SetLatestListData(IntermediateDataHistory[latestTimeStamp]);
                     lastTimeStamp = latestTimeStamp.ToBinary();
                 }
             }
@@ -376,37 +376,37 @@ namespace DemoApp
         };
         static readonly Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
         {
-            {DataId.SequenceNumber, "シーケンス番号"},
-            {DataId.Temperature, "温度[℃]"},
-            {DataId.RelativeHumidity, "相対湿度[％]"},
-            {DataId.AmbientLight, "環境光[ルクス]"},
-            {DataId.BarometricPressure, "気圧[hPa]"},
-            {DataId.SoundNoise, "雑音[dB]"},
-            {DataId.eTVOC, "総揮発性有機化学物量相当値[ppd]"},
-            {DataId.eCO2, "二酸化炭素換算の数値[ppm]"},
-            {DataId.DiscomfortIndex, "不快指数"},
-            {DataId.HeatStroke, "熱中症警戒度[℃]"},
+            {DataId.SequenceNumber      , "シーケンス番号"},
+            {DataId.Temperature         , "温度[℃]"},
+            {DataId.RelativeHumidity    , "相対湿度[％]"},
+            {DataId.AmbientLight        , "環境光[ルクス]"},
+            {DataId.BarometricPressure  , "気圧[hPa]"},
+            {DataId.SoundNoise          , "雑音[dB]"},
+            {DataId.eTVOC               , "総揮発性有機化学物量相当値[ppd]"},
+            {DataId.eCO2                , "二酸化炭素換算の数値[ppm]"},
+            {DataId.DiscomfortIndex     , "不快指数"},
+            {DataId.HeatStroke          , "熱中症警戒度[℃]"},
             {DataId.VibrationInformation, "振動情報"},
-            {DataId.SIValue, "スペクトル強度[kine]"},
-            {DataId.PGA, "PGA"},
-            {DataId.SeismicIntensity, "SeismicIntensity"},
+            {DataId.SIValue             , "スペクトル強度[kine]"},
+            {DataId.PGA                 , "PGA"},
+            {DataId.SeismicIntensity    , "SeismicIntensity"},
         };
         static readonly Dictionary<DataId, Color> DataColors = new Dictionary<DataId, Color>()
         {
-            {DataId.SequenceNumber, Color.Black},
-            {DataId.Temperature, Color.Red},
-            {DataId.RelativeHumidity, Color.OrangeRed},
-            {DataId.AmbientLight, Color.Yellow},
-            {DataId.BarometricPressure, Color.GreenYellow},
-            {DataId.SoundNoise, Color.Green},
-            {DataId.eTVOC, Color.Cyan},
-            {DataId.eCO2, Color.DarkCyan},
-            {DataId.DiscomfortIndex, Color.DarkRed},
-            {DataId.HeatStroke, Color.PaleVioletRed},
+            {DataId.SequenceNumber      , Color.Black},
+            {DataId.Temperature         , Color.Red},
+            {DataId.RelativeHumidity    , Color.OrangeRed},
+            {DataId.AmbientLight        , Color.Yellow},
+            {DataId.BarometricPressure  , Color.GreenYellow},
+            {DataId.SoundNoise          , Color.Green},
+            {DataId.eTVOC               , Color.Cyan},
+            {DataId.eCO2                , Color.DarkCyan},
+            {DataId.DiscomfortIndex     , Color.DarkRed},
+            {DataId.HeatStroke          , Color.PaleVioletRed},
             {DataId.VibrationInformation, Color.Blue},
-            {DataId.SIValue, Color.Blue},
-            {DataId.PGA, Color.Blue},
-            {DataId.SeismicIntensity, Color.Blue},
+            {DataId.SIValue             , Color.Blue},
+            {DataId.PGA                 , Color.Blue},
+            {DataId.SeismicIntensity    , Color.Blue},
         };
         /// <summary>
         /// 表示用中間データ
@@ -424,7 +424,7 @@ namespace DemoApp
                 }
             }
         }
-        Dictionary<DateTime, IntermediateData> IntermediateDatas = new Dictionary<DateTime, IntermediateData>();
+        Dictionary<DateTime, IntermediateData> IntermediateDataHistory = new Dictionary<DateTime, IntermediateData>();
 
         Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
         const int ChartPointsMaxCount = 20;
@@ -520,7 +520,18 @@ namespace DemoApp
             else
             {
                 var x = DateTimeToSeconds(dateTime);
-                dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
+                var viewEnd = x;
+                // グラフの表示範囲の指定
+                if (dataChartArea.AxisX.Minimum > x)
+                {
+                    dataChartArea.AxisX.Minimum = x;
+                }
+                if (dataChartArea.AxisX.Minimum < x)
+                {
+                    dataChartArea.AxisX.Maximum = x;
+                }
+                //dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
+                dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
                 foreach (var item in data.Values)
                 {
                     var dataId = item.Key;
