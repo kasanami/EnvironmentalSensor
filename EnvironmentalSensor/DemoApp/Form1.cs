@@ -431,6 +431,11 @@ namespace DemoApp
         DateTime StandardDateTime = DateTime.Now;
         Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
         const int ChartPointsMaxCount = 20;
+        /// <summary>
+        /// グラフのエリア
+        /// </summary>
+        ChartArea dataChartArea;
+        int dataChartArea_ViewSize = 60 * 10;
         void InitializeChartData()
         {
             dataChart.Series.Clear();
@@ -456,15 +461,15 @@ namespace DemoApp
             // グラフにスクロールバー表示
             {
                 int viewStart = 0;
-                int viewSize = 60 * 10;
+                int viewSize = dataChartArea_ViewSize;
                 var series = dataSeries[0];
-                var chartArea = dataChart.ChartAreas[series.ChartArea];
-                chartArea.CursorX.AutoScroll = true;
-                chartArea.AxisX.Minimum = viewSize * -100;
-                chartArea.AxisX.Maximum = viewSize * +100;
-                chartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
-                chartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
-                chartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
+                dataChartArea = dataChart.ChartAreas[series.ChartArea];
+                dataChartArea.CursorX.AutoScroll = true;
+                dataChartArea.AxisX.Minimum = viewSize * -10;
+                dataChartArea.AxisX.Maximum = viewSize * +100;
+                dataChartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
+                dataChartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
+                dataChartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
             }
         }
         void AddChartData(LatestDataLongResponsePayload payload)
@@ -483,7 +488,9 @@ namespace DemoApp
             {
                 var now = dateTime - StandardDateTime;
                 var x = Math.Round(now.TotalSeconds);
-                dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
+                var viewEnd = x;
+                //dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
+                dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
                 foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
                 {
                     var points = dataSeries[dataId].Points;
