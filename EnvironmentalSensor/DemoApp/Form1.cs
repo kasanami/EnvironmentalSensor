@@ -150,6 +150,8 @@ namespace DemoApp
             }
             // UIに反映
             {
+                // 今回追加されたデータ
+                var intermediateDataHistory = new Dictionary<DateTime, IntermediateData>();
                 // 最後の取得時刻から最新時刻までを、中間データに追加
                 // 念の為、時刻でソートもする
                 foreach (var item in receivedData
@@ -161,10 +163,13 @@ namespace DemoApp
                     var payload = frame.Payload;
                     if (payload is LatestDataLongResponsePayload)
                     {
-                        AddChartData(timeStamp, payload as LatestDataLongResponsePayload);
+                        var intermediateData = new IntermediateData(payload as LatestDataLongResponsePayload);
+                        intermediateDataHistory.Add(timeStamp, intermediateData);
+                        IntermediateDataHistory.Add(timeStamp, intermediateData);
                     }
-                    IntermediateDataHistory.Add(timeStamp, new IntermediateData(payload as LatestDataLongResponsePayload));
                 }
+                // 関連データ更新
+                UpdateSmooth();
                 // 表は最新時刻のみ表示
                 if (IntermediateDataHistory.Keys.Count > 0)
                 {
@@ -172,6 +177,8 @@ namespace DemoApp
                     SetLatestListData(IntermediateDataHistory[latestTimeStamp]);
                     lastTimeStamp = latestTimeStamp.ToBinary();
                 }
+                // グラフに反映
+                AddChartData(intermediateDataHistory);
             }
         }
 
@@ -259,7 +266,7 @@ namespace DemoApp
                     else if (frame.Payload is LatestDataLongResponsePayload)
                     {
                         var payload = frame.Payload as LatestDataLongResponsePayload;
-                        AddChartData(payload);
+                        //AddChartData(payload);
                         SetLatestListData(payload);
                     }
                     Console.WriteLine(frame.Payload.ToString());
@@ -357,6 +364,7 @@ namespace DemoApp
             PGA,
             SeismicIntensity,
         }
+        static readonly DataId[] DataIds = (DataId[])Enum.GetValues(typeof(DataId));
         static readonly Dictionary<DataId, double> DataScales = new Dictionary<DataId, double>()
         {
             {DataId.SequenceNumber      , 0.1},
@@ -414,10 +422,18 @@ namespace DemoApp
         struct IntermediateData
         {
             public Dictionary<DataId, double> Values;
+            public IntermediateData(double value)
+            {
+                Values = new Dictionary<DataId, double>();
+                foreach (var dataId in DataIds)
+                {
+                    Values.Add(dataId, value);
+                }
+            }
             public IntermediateData(LatestDataLongResponsePayload payload)
             {
                 Values = new Dictionary<DataId, double>();
-                foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+                foreach (var dataId in DataIds)
                 {
                     var value = GetDataFromId(payload, dataId);
                     Values.Add(dataId, value);
@@ -425,8 +441,30 @@ namespace DemoApp
             }
         }
         Dictionary<DateTime, IntermediateData> IntermediateDataHistory = new Dictionary<DateTime, IntermediateData>();
+        IntermediateData SmoothIntermediateData = new IntermediateData(0);
+        void UpdateSmooth()
+        {
+            const int Count = 5;
+            var totalIntermediateData = new IntermediateData(0);
+            foreach (var dataId in DataIds)
+            {
+                totalIntermediateData.Values[dataId] = 0;
+            }
+            foreach (var item in IntermediateDataHistory.Reverse().Take(Count))
+            {
+                foreach (var dataId in DataIds)
+                {
+                    totalIntermediateData.Values[dataId] += item.Value.Values[dataId];
+                }
+            }
+            foreach (var dataId in DataIds)
+            {
+                SmoothIntermediateData.Values[dataId] = totalIntermediateData.Values[dataId] / Count;
+            }
+        }
 
         Dictionary<DataId, Series> dataSeries = new Dictionary<DataId, Series>();
+        Dictionary<DataId, Series> smoothDataSeries = new Dictionary<DataId, Series>();
         const int ChartPointsMaxCount = 20;
         /// <summary>
         /// グラフのエリア
@@ -438,16 +476,18 @@ namespace DemoApp
         {
             return dateTime.Ticks / 10000000;
         }
-
+        /// <summary>
+        /// グラフ初期化
+        /// </summary>
         void InitializeChartData()
         {
             dataChart.Series.Clear();
-            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            foreach (var dataId in DataIds)
             {
                 var dataName = DataNames[dataId] + "x" + DataScales[dataId].ToString();
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
-                if (dataId == DataId.SequenceNumber)
+                if (dataId == DataId.SequenceNumber || dataId == DataId.SoundNoise)
                 {
                     series.BorderWidth = 1;
                 }
@@ -460,6 +500,19 @@ namespace DemoApp
 
                 dataSeries.Add(dataId, series);
             }
+
+            {
+                var dataId = DataId.SoundNoise;
+                var dataName = DataNames[dataId] + "(平滑)" + "x" + DataScales[dataId].ToString();
+                var series = new Series(dataName);
+                series.ChartType = SeriesChartType.Line;
+                series.BorderWidth = 2;
+                series.Color = Color.DarkGreen;
+                dataChart.Series.Add(series);
+
+                smoothDataSeries.Add(dataId, series);
+            }
+
             dataChart.Font = new Font(dataChart.Font.Name, 18);
             // グラフにスクロールバー表示
             {
@@ -475,74 +528,53 @@ namespace DemoApp
                 dataChartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
             }
         }
-        void AddChartData(LatestDataLongResponsePayload payload)
+
+        void AddChartData(Dictionary<DateTime, IntermediateData> intermediateDataHistory)
         {
-            AddChartData(DateTime.Now, payload);
-        }
-        void AddChartData(DateTime dateTime, LatestDataLongResponsePayload payload)
-        {
-            DebugWriteLine($"{nameof(AddChartData)} {dateTime} {payload.SequenceNumber}");
             if (dataChart.InvokeRequired)
             {
                 var _delegate = new AddChartDataDelegate(AddChartData);
-                Invoke(_delegate, new object[] { dateTime, payload });
+                Invoke(_delegate, new object[] { intermediateDataHistory });
             }
             else
             {
-                var x = DateTimeToSeconds(dateTime);
-                var viewEnd = x;
-                // グラフの表示範囲の指定
-                if (dataChartArea.AxisX.Minimum > x)
+                double viewEnd = 0;
+                foreach (var item2 in intermediateDataHistory)
                 {
-                    dataChartArea.AxisX.Minimum = x;
+                    var dateTime = item2.Key;
+                    var x = DateTimeToSeconds(dateTime);
+                    viewEnd = x;
+                    // グラフの表示範囲の指定
+                    if (dataChartArea.AxisX.Minimum > x)
+                    {
+                        dataChartArea.AxisX.Minimum = x;
+                    }
+                    if (dataChartArea.AxisX.Minimum < x)
+                    {
+                        dataChartArea.AxisX.Maximum = x;
+                    }
+                    var intermediateData = item2.Value;
+                    foreach (var item in intermediateData.Values)
+                    {
+                        var dataId = item.Key;
+                        var points = dataSeries[dataId].Points;
+                        var scale = DataScales[dataId];
+                        points.AddXY(x, item.Value * scale);
+                    }
+                    {
+                        var dataId = DataId.SoundNoise;
+                        var points = smoothDataSeries[dataId].Points;
+                        var scale = DataScales[dataId];
+                        points.AddXY(x, SmoothIntermediateData.Values[dataId] * scale);
+                    }
                 }
-                if (dataChartArea.AxisX.Minimum < x)
+                if (viewEnd > 0)
                 {
-                    dataChartArea.AxisX.Maximum = x;
-                }
-                //dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
-                dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
-                foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
-                {
-                    var points = dataSeries[dataId].Points;
-                    var scale = DataScales[dataId];
-                    points.AddXY(x, GetDataFromId(payload, dataId) * scale);
-                }
-            }
-        }
-        void AddChartData(DateTime dateTime, IntermediateData data)
-        {
-            if (dataChart.InvokeRequired)
-            {
-                var _delegate = new AddChartDataDelegate2(AddChartData);
-                Invoke(_delegate, new object[] { dateTime, data });
-            }
-            else
-            {
-                var x = DateTimeToSeconds(dateTime);
-                var viewEnd = x;
-                // グラフの表示範囲の指定
-                if (dataChartArea.AxisX.Minimum > x)
-                {
-                    dataChartArea.AxisX.Minimum = x;
-                }
-                if (dataChartArea.AxisX.Minimum < x)
-                {
-                    dataChartArea.AxisX.Maximum = x;
-                }
-                //dataChart.ChartAreas[0].AxisX.ScaleView.MinSize = 100;
-                dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
-                foreach (var item in data.Values)
-                {
-                    var dataId = item.Key;
-                    var points = dataSeries[dataId].Points;
-                    var scale = DataScales[dataId];
-                    points.AddXY(x, item.Value * scale);
+                    dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
                 }
             }
         }
-        delegate void AddChartDataDelegate(DateTime dateTime, LatestDataLongResponsePayload payload);
-        delegate void AddChartDataDelegate2(DateTime dateTime, IntermediateData payload);
+        delegate void AddChartDataDelegate(Dictionary<DateTime, IntermediateData> intermediateDataHistory);
 
         static double GetDataFromId(LatestDataLongResponsePayload payload, DataId dataId)
         {
@@ -568,14 +600,14 @@ namespace DemoApp
             latestDataGridView.Columns.Clear();
             latestDataGridView.Columns.Add("Name", "名前");
             latestDataGridView.Columns.Add("Value", "値");
-            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            foreach (var dataId in DataIds)
             {
                 latestDataGridView.Rows.Add(DataNames[dataId], "");
             }
         }
         void SetLatestListData(LatestDataLongResponsePayload payload)
         {
-            foreach (var dataId in (DataId[])Enum.GetValues(typeof(DataId)))
+            foreach (var dataId in DataIds)
             {
                 latestDataGridView[1, (int)dataId].Value = GetDataFromId(payload, dataId);
             }
