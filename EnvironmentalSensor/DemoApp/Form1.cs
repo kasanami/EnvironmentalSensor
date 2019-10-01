@@ -406,7 +406,7 @@ namespace DemoApp
             {DataId.RelativeHumidity    , Color.OrangeRed},
             {DataId.AmbientLight        , Color.Yellow},
             {DataId.BarometricPressure  , Color.GreenYellow},
-            {DataId.SoundNoise          , Color.Green},
+            {DataId.SoundNoise          , Color.FromArgb(128, Color.Green) },
             {DataId.eTVOC               , Color.Cyan},
             {DataId.eCO2                , Color.DarkCyan},
             {DataId.DiscomfortIndex     , Color.DarkRed},
@@ -442,9 +442,13 @@ namespace DemoApp
         }
         Dictionary<DateTime, IntermediateData> IntermediateDataHistory = new Dictionary<DateTime, IntermediateData>();
         IntermediateData SmoothIntermediateData = new IntermediateData(0);
+        /// <summary>
+        /// SmoothIntermediateDataをIntermediateDataHistoryから作成
+        /// ※最新データから作成
+        /// </summary>
         void UpdateSmooth()
         {
-            const int Count = 5;
+            const int Count = 10;
             var totalIntermediateData = new IntermediateData(0);
             foreach (var dataId in DataIds)
             {
@@ -470,11 +474,17 @@ namespace DemoApp
         /// グラフのエリア
         /// </summary>
         ChartArea dataChartArea;
-        int dataChartArea_ViewSize = 60 * 10;
-
-        static double DateTimeToSeconds(DateTime dateTime)
+        /// <summary>
+        /// 一画面に表示する時間
+        /// </summary>
+        static double DataChartArea_ViewSize = TimeSpan.FromMinutes(10).TotalDays;// 10分
+        /// <summary>
+        /// 日付型をグラフのX軸の値に変更
+        /// </summary>
+        static double DateTimeToX(DateTime dateTime)
         {
-            return dateTime.Ticks / 10000000;
+            return dateTime.ToOADate();
+            //return dateTime.Ticks / 10000000;
         }
         /// <summary>
         /// グラフ初期化
@@ -516,16 +526,22 @@ namespace DemoApp
             dataChart.Font = new Font(dataChart.Font.Name, 18);
             // グラフにスクロールバー表示
             {
-                int viewStart = 0;
-                int viewSize = dataChartArea_ViewSize;
+                var viewStart = 0.0;
+                var viewSize = DataChartArea_ViewSize;
                 var series = dataSeries[0];
                 dataChartArea = dataChart.ChartAreas[series.ChartArea];
                 dataChartArea.CursorX.AutoScroll = true;
-                dataChartArea.AxisX.Minimum = DateTimeToSeconds(DateTime.Now);
-                dataChartArea.AxisX.Maximum = DateTimeToSeconds(DateTime.Now);
+                dataChartArea.AxisX.Minimum = DateTimeToX(DateTime.Now);
+                dataChartArea.AxisX.Maximum = DateTimeToX(DateTime.Now);
                 dataChartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
                 dataChartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
                 dataChartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
+                // X軸を時間で表示する設定
+                dataChartArea.AxisX.IntervalType = DateTimeIntervalType.Minutes;
+                dataChartArea.AxisX.Interval = 5;
+                dataChartArea.AxisX.LabelStyle.IntervalType = dataChartArea.AxisX.IntervalType;
+                dataChartArea.AxisX.LabelStyle.Interval = dataChartArea.AxisX.Interval;
+                dataChartArea.AxisX.LabelStyle.Format = "HH:mm";
             }
         }
 
@@ -542,7 +558,7 @@ namespace DemoApp
                 foreach (var item2 in intermediateDataHistory)
                 {
                     var dateTime = item2.Key;
-                    var x = DateTimeToSeconds(dateTime);
+                    var x = DateTimeToX(dateTime);
                     viewEnd = x;
                     // グラフの表示範囲の指定
                     if (dataChartArea.AxisX.Minimum > x)
@@ -570,7 +586,7 @@ namespace DemoApp
                 }
                 if (viewEnd > 0)
                 {
-                    dataChartArea.AxisX.ScaleView.Zoom(viewEnd - dataChartArea_ViewSize, viewEnd);
+                    dataChartArea.AxisX.ScaleView.Zoom(viewEnd - DataChartArea_ViewSize, viewEnd);
                 }
             }
         }
