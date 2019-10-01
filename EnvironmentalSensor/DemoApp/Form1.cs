@@ -534,13 +534,14 @@ namespace DemoApp
                 dataChartArea.AxisX.Minimum = DateTimeToX(DateTime.Now);
                 dataChartArea.AxisX.Maximum = DateTimeToX(DateTime.Now);
                 dataChartArea.AxisX.ScaleView.Zoom(viewStart, viewStart + viewSize);
-                dataChartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 10;
+                dataChartArea.AxisX.ScaleView.SmallScrollSize = viewSize / 100;
+                dataChartArea.AxisX.ScaleView.SmallScrollMinSize = dataChartArea.AxisX.ScaleView.SmallScrollSize;
                 dataChartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
                 // X軸を時間で表示する設定
                 dataChartArea.AxisX.IntervalType = DateTimeIntervalType.Minutes;
-                dataChartArea.AxisX.Interval = 5;
+                dataChartArea.AxisX.Interval = 1;
                 dataChartArea.AxisX.LabelStyle.IntervalType = dataChartArea.AxisX.IntervalType;
-                dataChartArea.AxisX.LabelStyle.Interval = dataChartArea.AxisX.Interval;
+                dataChartArea.AxisX.LabelStyle.Interval = 5;
                 dataChartArea.AxisX.LabelStyle.Format = "HH:mm";
             }
         }
