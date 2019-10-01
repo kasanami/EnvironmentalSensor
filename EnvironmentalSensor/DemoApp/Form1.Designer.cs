@@ -362,12 +362,14 @@
             // dataFromServerRadioButton
             // 
             this.dataFromServerRadioButton.AutoSize = true;
+            this.dataFromServerRadioButton.Checked = true;
             this.dataFromServerRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFromServerRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.dataFromServerRadioButton.Location = new System.Drawing.Point(505, 3);
             this.dataFromServerRadioButton.Name = "dataFromServerRadioButton";
             this.dataFromServerRadioButton.Size = new System.Drawing.Size(496, 34);
             this.dataFromServerRadioButton.TabIndex = 1;
+            this.dataFromServerRadioButton.TabStop = true;
             this.dataFromServerRadioButton.Text = "サーバーから";
             this.dataFromServerRadioButton.UseVisualStyleBackColor = true;
             this.dataFromServerRadioButton.CheckedChanged += new System.EventHandler(this.DataFromServerRadioButton_CheckedChanged);
@@ -375,14 +377,12 @@
             // dataFromSensorRadioButton
             // 
             this.dataFromSensorRadioButton.AutoSize = true;
-            this.dataFromSensorRadioButton.Checked = true;
             this.dataFromSensorRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFromSensorRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.dataFromSensorRadioButton.Location = new System.Drawing.Point(3, 3);
             this.dataFromSensorRadioButton.Name = "dataFromSensorRadioButton";
             this.dataFromSensorRadioButton.Size = new System.Drawing.Size(496, 34);
             this.dataFromSensorRadioButton.TabIndex = 0;
-            this.dataFromSensorRadioButton.TabStop = true;
             this.dataFromSensorRadioButton.Text = "センサーから";
             this.dataFromSensorRadioButton.UseVisualStyleBackColor = true;
             this.dataFromSensorRadioButton.CheckedChanged += new System.EventHandler(this.DataFromSensorRadioButton_CheckedChanged);
