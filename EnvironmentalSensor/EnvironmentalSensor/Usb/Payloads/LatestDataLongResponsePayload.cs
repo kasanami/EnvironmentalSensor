@@ -11,6 +11,13 @@ namespace EnvironmentalSensor.Usb.Payloads
     /// </summary>
     public class LatestDataLongResponsePayload : DataLongResponsePayload
     {
+        /// <summary>
+        /// Dataのサイズ
+        /// </summary>
+        const int DataSize = 49;
+        /// <summary>
+        /// SequenceNumberや温度等のデータ
+        /// </summary>
         public override byte[] Data
         {
             get
@@ -22,9 +29,9 @@ namespace EnvironmentalSensor.Usb.Payloads
                     WriteOn(binaryWriter);
                     var data = memoryStream.ToArray();
 #if DEBUG
-                    if (data.Length != 49)
+                    if (data.Length != DataSize)
                     {
-                        throw new Exception($"{Data.Length} != 49");
+                        throw new Exception($"{Data.Length} != {DataSize}");
                     }
 #endif
                     return data;
@@ -43,7 +50,8 @@ namespace EnvironmentalSensor.Usb.Payloads
         public UInt8 SequenceNumber;
         #endregion Dataの内容
         /// <summary>
-        /// 
+        /// sequence numberを指定して初期化
+        /// <para>テストなどで使用するコンストラクタ.。通常はセンサーからの受信データから初期化する</para>
         /// </summary>
         public LatestDataLongResponsePayload(byte sequenceNumber)
         {
