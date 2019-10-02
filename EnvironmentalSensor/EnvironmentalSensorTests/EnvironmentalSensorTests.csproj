@@ -59,8 +59,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="USB\FrameTests.cs" />
-    <Compile Include="USB\Payloads\DataLongResponsePayloadTests.cs" />
+    <Compile Include="Usb\FrameTests.cs" />
+    <Compile Include="Usb\Payloads\DataLongResponsePayloadTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

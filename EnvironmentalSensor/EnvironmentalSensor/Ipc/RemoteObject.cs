@@ -1,5 +1,5 @@
-﻿using EnvironmentalSensor.USB;
-using EnvironmentalSensor.USB.Payloads;
+﻿using EnvironmentalSensor.Usb;
+using EnvironmentalSensor.Usb.Payloads;
 using System;
 using System.Linq;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using System.IO.Ports;
 
-namespace EnvironmentalSensor.USB
+namespace EnvironmentalSensor.Usb
 {
     public class Utility
     {

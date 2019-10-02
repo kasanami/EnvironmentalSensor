@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Ksnm.ExtensionMethods.System.IO.Stream;
 
-namespace EnvironmentalSensor.USB.Payloads
+namespace EnvironmentalSensor.Usb.Payloads
 {
     public class MemoryDataLongResponsePayload : DataLongResponsePayload
     {

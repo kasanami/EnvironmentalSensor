@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EnvironmentalSensor.USB.Payloads
+namespace EnvironmentalSensor.Usb.Payloads
 {
     /// <summary>
     /// FLASH memory に保存されているセンシングデータを取得する

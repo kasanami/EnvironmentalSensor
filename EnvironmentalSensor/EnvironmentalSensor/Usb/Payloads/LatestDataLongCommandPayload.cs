@@ -1,4 +1,4 @@
-﻿namespace EnvironmentalSensor.USB.Payloads
+﻿namespace EnvironmentalSensor.Usb.Payloads
 {
     /// <summary>
     /// 最新データを要求するペイロード

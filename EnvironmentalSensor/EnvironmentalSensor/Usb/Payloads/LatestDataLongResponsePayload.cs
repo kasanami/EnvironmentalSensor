@@ -4,7 +4,7 @@ using System.Text;
 using Ksnm.ExtensionMethods.System.IO.Stream;
 using UInt8 = System.Byte;
 
-namespace EnvironmentalSensor.USB.Payloads
+namespace EnvironmentalSensor.Usb.Payloads
 {
     /// <summary>
     /// 最新データの返答

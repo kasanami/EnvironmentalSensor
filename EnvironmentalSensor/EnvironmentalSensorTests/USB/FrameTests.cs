@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EnvironmentalSensor.USB;
+using EnvironmentalSensor.Usb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EnvironmentalSensor.USB.Tests
+namespace EnvironmentalSensor.Usb.Tests
 {
     [TestClass()]
     public class FrameTests

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace EnvironmentalSensor.USB
+namespace EnvironmentalSensor.Usb
 {
     /// <summary>
     /// 付加的情報を除いた、データ本体

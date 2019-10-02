@@ -1,11 +1,11 @@
-﻿using EnvironmentalSensor.USB.Payloads;
+﻿using EnvironmentalSensor.Usb.Payloads;
 using Ksnm.Algorithm;
 using Ksnm.ExtensionMethods.System.IO.Stream;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace EnvironmentalSensor.USB
+namespace EnvironmentalSensor.Usb
 {
     /// <summary>
     /// USB 通信の送受信で使用する共通フレーム

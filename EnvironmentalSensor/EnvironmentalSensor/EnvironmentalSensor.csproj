@@ -49,20 +49,20 @@
     <Compile Include="Ipc\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorValue.cs" />
-    <Compile Include="USB\ErrorCode.cs" />
-    <Compile Include="USB\Frame.cs" />
-    <Compile Include="USB\FrameAddress.cs" />
-    <Compile Include="USB\FrameCommand.cs" />
-    <Compile Include="USB\FramePayload.cs" />
-    <Compile Include="USB\Payloads\CommandPayload.cs" />
-    <Compile Include="USB\Payloads\DataLongResponsePayload.cs" />
-    <Compile Include="USB\Payloads\ErrorResponsePayload.cs" />
-    <Compile Include="USB\Payloads\LatestDataLongCommandPayload.cs" />
-    <Compile Include="USB\Payloads\LatestDataLongResponsePayload.cs" />
-    <Compile Include="USB\Payloads\MemoryDataLongCommandPayload.cs" />
-    <Compile Include="USB\Payloads\MemoryDataLongResponsePayload.cs" />
-    <Compile Include="USB\Payloads\ResponsePayload.cs" />
-    <Compile Include="USB\Utility.cs" />
+    <Compile Include="Usb\ErrorCode.cs" />
+    <Compile Include="Usb\Frame.cs" />
+    <Compile Include="Usb\FrameAddress.cs" />
+    <Compile Include="Usb\FrameCommand.cs" />
+    <Compile Include="Usb\FramePayload.cs" />
+    <Compile Include="Usb\Payloads\CommandPayload.cs" />
+    <Compile Include="Usb\Payloads\DataLongResponsePayload.cs" />
+    <Compile Include="Usb\Payloads\ErrorResponsePayload.cs" />
+    <Compile Include="Usb\Payloads\LatestDataLongCommandPayload.cs" />
+    <Compile Include="Usb\Payloads\LatestDataLongResponsePayload.cs" />
+    <Compile Include="Usb\Payloads\MemoryDataLongCommandPayload.cs" />
+    <Compile Include="Usb\Payloads\MemoryDataLongResponsePayload.cs" />
+    <Compile Include="Usb\Payloads\ResponsePayload.cs" />
+    <Compile Include="Usb\Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

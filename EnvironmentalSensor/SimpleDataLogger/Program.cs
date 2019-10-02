@@ -1,6 +1,6 @@
 ﻿using EnvironmentalSensor;
-using EnvironmentalSensor.USB;
-using EnvironmentalSensor.USB.Payloads;
+using EnvironmentalSensor.Usb;
+using EnvironmentalSensor.Usb.Payloads;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static EnvironmentalSensor.USB.Utility;
+using static EnvironmentalSensor.Usb.Utility;
 
 namespace SimpleDataLogger
 {

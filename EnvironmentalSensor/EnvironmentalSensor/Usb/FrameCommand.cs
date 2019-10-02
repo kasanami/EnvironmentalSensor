@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnvironmentalSensor.USB
+namespace EnvironmentalSensor.Usb
 {
     /// <summary>
     /// Read, Write を指定する

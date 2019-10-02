@@ -1,6 +1,6 @@
 ﻿using EnvironmentalSensor.Ipc;
-using EnvironmentalSensor.USB;
-using EnvironmentalSensor.USB.Payloads;
+using EnvironmentalSensor.Usb;
+using EnvironmentalSensor.Usb.Payloads;
 using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using static EnvironmentalSensor.USB.Utility;
+using static EnvironmentalSensor.Usb.Utility;
 
 namespace DemoApp
 {

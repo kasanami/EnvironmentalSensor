@@ -1,7 +1,7 @@
 ﻿using EnvironmentalSensor;
 using EnvironmentalSensor.Ipc;
-using EnvironmentalSensor.USB;
-using EnvironmentalSensor.USB.Payloads;
+using EnvironmentalSensor.Usb;
+using EnvironmentalSensor.Usb.Payloads;
 using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using Ksnm.Utilities;
 using System;
@@ -14,7 +14,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static EnvironmentalSensor.USB.Utility;
+using static EnvironmentalSensor.Usb.Utility;
 
 namespace IpcServer
 {

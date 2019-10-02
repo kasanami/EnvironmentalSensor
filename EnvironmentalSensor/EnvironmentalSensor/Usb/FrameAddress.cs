@@ -1,4 +1,4 @@
-﻿namespace EnvironmentalSensor.USB
+﻿namespace EnvironmentalSensor.Usb
 {
     /// <summary>
     /// 実行する内容

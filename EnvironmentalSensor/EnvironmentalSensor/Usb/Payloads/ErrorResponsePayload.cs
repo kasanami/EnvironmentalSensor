@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace EnvironmentalSensor.USB.Payloads
+namespace EnvironmentalSensor.Usb.Payloads
 {
     /// <summary>
     /// エラー返答

@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace EnvironmentalSensor.USB.Payloads.Tests
+namespace EnvironmentalSensor.Usb.Payloads.Tests
 {
     [TestClass()]
     public class DataLongResponsePayloadTests
