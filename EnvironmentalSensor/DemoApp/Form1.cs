@@ -403,7 +403,7 @@ namespace DemoApp
         {
             {DataId.SequenceNumber      , Color.Black},
             {DataId.Temperature         , Color.Red},
-            {DataId.RelativeHumidity    , Color.OrangeRed},
+            {DataId.RelativeHumidity    , Color.Blue},
             {DataId.AmbientLight        , Color.Yellow},
             {DataId.BarometricPressure  , Color.GreenYellow},
             {DataId.SoundNoise          , Color.FromArgb(128, Color.Green) },
