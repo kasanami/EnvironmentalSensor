@@ -48,7 +48,7 @@ namespace EnvironmentalSensor.Usb
         /// <summary>
         /// CRC16の計算器
         /// </summary>
-        static CRC16 crc16 = new CRC16(CRC16Polynomial.IBM_Reversed, 0xFFFF, 0);
+        static Crc16 crc16 = new Crc16(Crc16Polynomial.IbmReversed, 0xFFFF, 0);
         /// <summary>
         /// 指定のバッファから初期化
         /// </summary>
