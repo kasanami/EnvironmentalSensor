@@ -585,7 +585,8 @@ namespace DemoApp
                         points.AddXY(x, SmoothIntermediateData.Values[dataId] * scale);
                     }
                 }
-                if (viewEnd > 0)
+                // スクロール位置更新
+                if (dataChartAutoScrollCheckBox.Checked && viewEnd > 0)
                 {
                     dataChartArea.AxisX.ScaleView.Zoom(viewEnd - DataChartArea_ViewSize, viewEnd);
                 }

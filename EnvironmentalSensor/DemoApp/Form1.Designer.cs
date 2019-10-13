@@ -57,6 +57,7 @@
             this.dataFromSensorRadioButton = new System.Windows.Forms.RadioButton();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.measurementTimer = new System.Windows.Forms.Timer(this.components);
+            this.dataChartAutoScrollCheckBox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -294,12 +295,14 @@
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
-            this.tableLayoutPanel4.Controls.Add(this.dataChart, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.latestDataGridView, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.dataChartAutoScrollCheckBox, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.dataChart, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.latestDataGridView, 1, 1);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 15);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(1004, 477);
             this.tableLayoutPanel4.TabIndex = 1;
@@ -311,13 +314,13 @@
             this.dataChart.Dock = System.Windows.Forms.DockStyle.Fill;
             legend1.Name = "Legend1";
             this.dataChart.Legends.Add(legend1);
-            this.dataChart.Location = new System.Drawing.Point(3, 3);
+            this.dataChart.Location = new System.Drawing.Point(3, 43);
             this.dataChart.Name = "dataChart";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.dataChart.Series.Add(series1);
-            this.dataChart.Size = new System.Drawing.Size(698, 471);
+            this.dataChart.Size = new System.Drawing.Size(698, 431);
             this.dataChart.TabIndex = 0;
             this.dataChart.Text = "chart1";
             // 
@@ -325,11 +328,11 @@
             // 
             this.latestDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.latestDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.latestDataGridView.Location = new System.Drawing.Point(707, 3);
+            this.latestDataGridView.Location = new System.Drawing.Point(707, 43);
             this.latestDataGridView.Name = "latestDataGridView";
             this.latestDataGridView.ReadOnly = true;
             this.latestDataGridView.RowTemplate.Height = 21;
-            this.latestDataGridView.Size = new System.Drawing.Size(294, 471);
+            this.latestDataGridView.Size = new System.Drawing.Size(294, 431);
             this.latestDataGridView.TabIndex = 1;
             // 
             // groupBox4
@@ -396,6 +399,17 @@
             this.measurementTimer.Interval = 1000;
             this.measurementTimer.Tick += new System.EventHandler(this.MeasurementTimer_Tick);
             // 
+            // dataChartAutoScrollCheckBox
+            // 
+            this.dataChartAutoScrollCheckBox.AutoSize = true;
+            this.dataChartAutoScrollCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataChartAutoScrollCheckBox.Location = new System.Drawing.Point(3, 3);
+            this.dataChartAutoScrollCheckBox.Name = "dataChartAutoScrollCheckBox";
+            this.dataChartAutoScrollCheckBox.Size = new System.Drawing.Size(698, 34);
+            this.dataChartAutoScrollCheckBox.TabIndex = 0;
+            this.dataChartAutoScrollCheckBox.Text = "自動スクロール";
+            this.dataChartAutoScrollCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -413,6 +427,7 @@
             this.tableLayoutPanel3.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.latestDataGridView)).EndInit();
             this.groupBox4.ResumeLayout(false);
@@ -449,6 +464,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.RadioButton dataFromServerRadioButton;
         private System.Windows.Forms.RadioButton dataFromSensorRadioButton;
+        private System.Windows.Forms.CheckBox dataChartAutoScrollCheckBox;
     }
 }
 
