@@ -21,15 +21,17 @@ namespace EnvironmentalSensor.Ipc
         /// </summary>
         public const int HistoryMaxCount = 1024;
         /// <summary>
-        /// 情報を設定した日時
+        /// 情報を設定した日時(UTC)
         /// </summary>
-        public long TimeStampBinary;
+        public long TimeStampTicks;
         /// <summary>
-        /// 情報を設定した日時
+        /// 情報を設定した日時(UTC)
         /// </summary>
-        public DateTime TimeStamp { get => DateTime.FromBinary(TimeStampBinary); }
+        public DateTime TimeStamp { get => new DateTime(TimeStampTicks, DateTimeKind.Utc); }
         /// <summary>
         /// 受信データの履歴
+        /// <para>Key=設定日時(UTC)</para>
+        /// <para>Value=受信データ</para>
         /// </summary>
         public Dictionary<long, byte[]> ReceivedDataHistory { get; protected set; } = new Dictionary<long, byte[]>();
         /// <summary>
@@ -41,6 +43,8 @@ namespace EnvironmentalSensor.Ipc
         /// <summary>
         /// 受信データを設定
         /// </summary>
+        /// <param name="now">受信日時（関数内でUTCに変換される）</param>
+        /// <param name="receivedData">受信データ</param>
         public void SetReceivedData(DateTime now, byte[] receivedData, int count)
         {
             var buffer = new byte[count];
@@ -50,6 +54,8 @@ namespace EnvironmentalSensor.Ipc
         /// <summary>
         /// 受信データを設定
         /// </summary>
+        /// <param name="now">受信日時（関数内でUTCに変換される）</param>
+        /// <param name="receivedData">受信データ</param>
         public void SetReceivedData(DateTime now, byte[] receivedData)
         {
             // 更新開始
@@ -58,16 +64,16 @@ namespace EnvironmentalSensor.Ipc
             // わざと遅延させてデータ更新中にアクセスしていないかチェックしやすくする
             Thread.Sleep(100);
 #endif
-            //
-            TimeStampBinary = now.ToBinary();
+            // 情報を設定した日時
+            TimeStampTicks = now.ToUniversalTime().Ticks;
             // 連続で処理されると同じキー値になるので、少し時間をすすめる。
             // もともと実際の測定日時と受信日時にずれがあるので、多少は良しとする。
-            while (ReceivedDataHistory.ContainsKey(TimeStampBinary))
+            while (ReceivedDataHistory.ContainsKey(TimeStampTicks))
             {
-                TimeStampBinary++;
+                TimeStampTicks++;
             }
             // 履歴に追加
-            ReceivedDataHistory.Add(TimeStampBinary, receivedData);
+            ReceivedDataHistory.Add(TimeStampTicks, receivedData);
             // 古い履歴を削除
             while (ReceivedDataHistory.Count > HistoryMaxCount)
             {

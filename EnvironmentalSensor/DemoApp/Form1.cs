@@ -77,7 +77,10 @@ namespace DemoApp
         }
 
         #region センサー関係
-        long lastTimeStamp = long.MinValue;
+        /// <summary>
+        /// 最後に受信した日時(サーバーとの同期用なのでUTCに合わせる)
+        /// </summary>
+        long lastTimeStampTicks = long.MinValue;
         /// <summary>
         /// 最新データを取得
         /// </summary>
@@ -129,7 +132,7 @@ namespace DemoApp
                     throw new Exception($"排他制御が正常にできていない {nameof(remoteObject.UpdateCompleted)}==false");
                 }
                 // 前回の取得日時より後なら取得
-                if (lastTimeStamp < remoteObject.TimeStampBinary &&
+                if (lastTimeStampTicks < remoteObject.TimeStampTicks &&
                     remoteObject.UpdateCompleted)
                 {
                     foreach (var key in remoteObject.ReceivedDataHistory.Keys)
@@ -155,7 +158,7 @@ namespace DemoApp
                 // 最後の取得時刻から最新時刻までを、中間データに追加
                 // 念の為、時刻でソートもする
                 foreach (var item in receivedData
-                    .Where(item => item.Key > lastTimeStamp)
+                    .Where(item => item.Key > lastTimeStampTicks)
                     .OrderBy(item => item.Key))
                 {
                     var timeStamp = DateTime.FromBinary(item.Key);
@@ -175,7 +178,7 @@ namespace DemoApp
                 {
                     var latestTimeStamp = IntermediateDataHistory.Keys.Max();
                     SetLatestListData(IntermediateDataHistory[latestTimeStamp]);
-                    lastTimeStamp = latestTimeStamp.ToBinary();
+                    lastTimeStampTicks = latestTimeStamp.Ticks;
                 }
                 // グラフに反映
                 AddChartData(intermediateDataHistory);
