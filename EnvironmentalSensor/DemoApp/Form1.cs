@@ -616,11 +616,25 @@ namespace DemoApp
             throw new NotSupportedException($"{nameof(dataId)}={dataId}");
         }
 
+        enum LatestDataGridView_Columns
+        {
+            Name,
+            Value,
+            Visible,
+        }
+
         void InitializeLatestListData()
         {
             latestDataGridView.Columns.Clear();
-            latestDataGridView.Columns.Add("Name", "名前");
-            latestDataGridView.Columns.Add("Value", "値");
+            latestDataGridView.Columns.Add(LatestDataGridView_Columns.Name.ToString(), "名前");
+            latestDataGridView.Columns.Add(LatestDataGridView_Columns.Value.ToString(), "値");
+            {
+                var column = new DataGridViewCheckBoxColumn();
+                column.Name = LatestDataGridView_Columns.Visible.ToString();
+                column.HeaderText = "表示";
+                column.Width = 50;
+                latestDataGridView.Columns.Add(column);
+            }
             foreach (var dataId in DataIds)
             {
                 latestDataGridView.Rows.Add(DataNames[dataId], "");
@@ -628,17 +642,19 @@ namespace DemoApp
         }
         void SetLatestListData(LatestDataLongResponsePayload payload)
         {
+            int column = (int)LatestDataGridView_Columns.Value;
             foreach (var dataId in DataIds)
             {
-                latestDataGridView[1, (int)dataId].Value = GetDataFromId(payload, dataId);
+                latestDataGridView[column, (int)dataId].Value = GetDataFromId(payload, dataId);
             }
         }
         void SetLatestListData(IntermediateData data)
         {
+            int column = (int)LatestDataGridView_Columns.Value;
             foreach (var item in data.Values)
             {
                 var dataId = item.Key;
-                latestDataGridView[1, (int)dataId].Value = item.Value;
+                latestDataGridView[column, (int)dataId].Value = item.Value;
             }
         }
         #endregion データ表示
