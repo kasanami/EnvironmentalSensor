@@ -73,6 +73,9 @@ namespace IpcServer
 #else
             Console.WriteLine($"IpcServer");
 #endif
+            // モード設定
+            var mode = Mode.Dummy;
+            Console.WriteLine($"mode:{mode}");
 #if false
             Console.WriteLine($"{nameof(LifetimeServices.LeaseManagerPollTime)}={LifetimeServices.LeaseManagerPollTime}");
             Console.WriteLine($"{nameof(LifetimeServices.LeaseTime)}={LifetimeServices.LeaseTime}");
@@ -90,34 +93,38 @@ namespace IpcServer
             LifetimeServices.LeaseTime = TimeSpan.Zero;
             server = new Server();
 
-            var portName = "";
-            while (true)
+            // ポート処理は通常モードのときだけ行う
+            if (mode == Mode.Normal)
             {
-                Console.WriteLine($"ポート名を入力[COM1など]");
-                portName = Console.ReadLine();
-                Console.WriteLine($"{portName} でよろしいですか？[Y/N]");
-                var read = Console.ReadLine();
-                if (read.ToUpper() == "Y")
+                var portName = "";
+                while (true)
                 {
-                    break;
+                    Console.WriteLine($"ポート名を入力[COM1など]");
+                    portName = Console.ReadLine();
+                    Console.WriteLine($"{portName} でよろしいですか？[Y/N]");
+                    var read = Console.ReadLine();
+                    if (read.ToUpper() == "Y")
+                    {
+                        break;
+                    }
+                }
+                // シリアルポートを設定して通信を開始
+                {
+                    serialPort.ErrorReceived += SerialPort_ErrorReceived;
+                    serialPort.PinChanged += SerialPort_PinChanged;
+                    serialPort.DataReceived += SerialPort_DataReceived;
+                    SettingSerialPort(serialPort);
+                    serialPort.PortName = portName;
+                    serialPort.Open();
                 }
             }
-            // シリアルポートを設定して通信を開始
-            {
-                serialPort.ErrorReceived += SerialPort_ErrorReceived;
-                serialPort.PinChanged += SerialPort_PinChanged;
-                serialPort.DataReceived += SerialPort_DataReceived;
-                SettingSerialPort(serialPort);
-                serialPort.PortName = portName;
-                serialPort.Open();
-            }
+
             // ルーティーン開始
-            var mode = Mode.Normal;
             if (mode == Mode.Normal)
             {
                 NormalRoutine();
             }
-            else
+            else if (mode == Mode.Dummy)
             {
                 DummyRoutine();
             }
@@ -202,7 +209,8 @@ namespace IpcServer
                 // ダミー
                 {
                     // ダミーの測定データ更新
-                    //payload.Temperature=
+                    payload.SequenceNumber += 1;
+                    //Console.WriteLine($"SequenceNumber:{payload.SequenceNumber}");
                     // ダミーの受信データ
                     var frame = new Frame(payload);// フレームオブジェクトに変換
                     var size = frame.GetSize();
