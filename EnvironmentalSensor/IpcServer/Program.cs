@@ -28,6 +28,18 @@ namespace IpcServer
         const string ProhibitionOfMultipleActivationMutexName = "Local/EnvironmentalSensor.IpcServer";
         static Mutex ProhibitionOfMultipleActivationMutex;
 
+        enum Mode
+        {
+            /// <summary>
+            /// 通常
+            /// </summary>
+            Normal,
+            /// <summary>
+            /// センサーを使用せず、Dummyデータを出力する。
+            /// </summary>
+            Dummy,
+        }
+
         #region 通信関係
         static SerialPort serialPort = new SerialPort();
         /// <summary>
@@ -99,6 +111,21 @@ namespace IpcServer
                 serialPort.PortName = portName;
                 serialPort.Open();
             }
+            // ルーティーン開始
+            var mode = Mode.Normal;
+            if (mode == Mode.Normal)
+            {
+                NormalRoutine();
+            }
+            else
+            {
+                DummyRoutine();
+            }
+            // 終了
+            serialPort.Close();
+        }
+        static void NormalRoutine()
+        {
             // ログ準備
             {
                 var logFilePath = $"Logs/{DateTime.Now.ToString("yyyyMMdd")}.csv";
@@ -130,8 +157,69 @@ namespace IpcServer
                     break;
                 }
             }
-            // 終了
-            serialPort.Close();
+        }
+        /// <summary>
+        /// 
+        /// EnvironmentalSensorCommunication使わずこの関数内で
+        /// LatestDataLongResponsePayloadを作成
+        /// </summary>
+        static void DummyRoutine()
+        {
+            while (true)
+            {
+                // 非同期処理をCancelするためのTokenを取得.
+                using (var cancellationTokenSource = new CancellationTokenSource())
+                {
+                    DummyEnvironmentalSensorCommunication(cancellationTokenSource.Token);
+                    // 入力待ち
+                    Console.WriteLine("停止するには何かのキーを入力");
+                    Console.ReadLine();
+                    // 入力されたら停止
+                    cancellationTokenSource.Cancel();
+                }
+                // 入力待ち
+                Console.WriteLine($"終了する場合は[Q] それ以外のキーは再開");
+                var read = Console.ReadLine();
+                if (read.ToUpper() == "Q")
+                {
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        /// 定期的にデータを取得
+        /// </summary>
+        static async void DummyEnvironmentalSensorCommunication(CancellationToken cancelToken)
+        {
+            var payload = new LatestDataLongResponsePayload(0);
+            while (true)
+            {
+                // キャンセルリクエストが来たらキャンセル
+                if (cancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
+                // ダミー
+                {
+                    // ダミーの測定データ更新
+                    //payload.Temperature=
+                    // ダミーの受信データ
+                    var frame = new Frame(payload);// フレームオブジェクトに変換
+                    var size = frame.GetSize();
+                    var buffer = frame.ToBytes();
+                    // リモートオブジェクトに設定
+                    try
+                    {
+                        server.Mutex.WaitOne();
+                        server.RemoteObject.SetReceivedData(DateTime.Now, buffer, size);
+                    }
+                    finally
+                    {
+                        server.Mutex.ReleaseMutex();
+                    }
+                }
+                await Task.Delay(1000);
+            }
         }
         /// <summary>
         /// 多重起動の禁止処理
