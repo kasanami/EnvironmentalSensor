@@ -485,7 +485,7 @@ namespace DemoApp
         /// <summary>
         /// 一画面に表示する時間
         /// </summary>
-        static double DataChartArea_ViewSize = TimeSpan.FromMinutes(10).TotalDays;// 10分
+        static double DataChartArea_ViewSize = TimeSpan.FromMinutes(60).TotalDays;// 60分
         /// <summary>
         /// 日付型をグラフのX軸の値に変更
         /// </summary>
