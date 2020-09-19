@@ -198,6 +198,7 @@ namespace IpcServer
         /// </summary>
         static async void DummyEnvironmentalSensorCommunication(CancellationToken cancelToken)
         {
+            var random = new Ksnm.Randoms.Xorshift128();
             var payload = new LatestDataLongResponsePayload(0);
             while (true)
             {
@@ -211,6 +212,11 @@ namespace IpcServer
                     // ダミーの測定データ更新
                     payload.SequenceNumber += 1;
                     //Console.WriteLine($"SequenceNumber:{payload.SequenceNumber}");
+                    payload.Temperature.Raw = random.Next(2500, 3000);
+                    payload.RelativeHumidity.Raw = random.Next(4000, 5000);
+                    payload.AmbientLight.Raw = random.Next(40, 50);
+                    payload.BarometricPressure.Raw = random.Next(1000_000, 1013_000);
+                    payload.SoundNoise.Raw = random.Next(50_00, 60_00);
                     // ダミーの受信データ
                     var frame = new Frame(payload);// フレームオブジェクトに変換
                     var size = frame.GetSize();
