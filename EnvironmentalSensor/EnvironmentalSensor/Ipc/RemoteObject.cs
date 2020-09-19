@@ -30,7 +30,7 @@ namespace EnvironmentalSensor.Ipc
         public DateTime TimeStamp { get => new DateTime(TimeStampTicks, DateTimeKind.Utc); }
         /// <summary>
         /// 受信データの履歴
-        /// <para>Key=設定日時(UTC)</para>
+        /// <para>Key=情報を設定した日時(UTC)</para>
         /// <para>Value=受信データ</para>
         /// </summary>
         public Dictionary<long, byte[]> ReceivedDataHistory { get; protected set; } = new Dictionary<long, byte[]>();
@@ -61,6 +61,7 @@ namespace EnvironmentalSensor.Ipc
             // 更新開始
             UpdateCompleted = false;
 #if DEBUG
+            //Console.WriteLine($"{nameof(SetReceivedData)} {nameof(now)}={now}");
             // わざと遅延させてデータ更新中にアクセスしていないかチェックしやすくする
             Thread.Sleep(100);
 #endif

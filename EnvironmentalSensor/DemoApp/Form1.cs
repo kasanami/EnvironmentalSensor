@@ -161,7 +161,11 @@ namespace DemoApp
                     .Where(item => item.Key > lastTimeStampTicks)
                     .OrderBy(item => item.Key))
                 {
-                    var timeStamp = DateTime.FromBinary(item.Key);
+                    // item.Keyは、UTCなので、表示用にLocalTimeに変換
+                    var timeStamp = new DateTime(item.Key, DateTimeKind.Utc).ToLocalTime();
+#if DEBUG
+                    //Console.WriteLine($"{nameof(timeStamp)}={timeStamp}");
+#endif
                     var frame = new Frame(item.Value);
                     var payload = frame.Payload;
                     if (payload is LatestDataLongResponsePayload)
@@ -178,7 +182,8 @@ namespace DemoApp
                 {
                     var latestTimeStamp = IntermediateDataHistory.Keys.Max();
                     SetLatestListData(IntermediateDataHistory[latestTimeStamp]);
-                    lastTimeStampTicks = latestTimeStamp.Ticks;
+                    // lastTimeStampTicksはUTCなので変換
+                    lastTimeStampTicks = latestTimeStamp.ToUniversalTime().Ticks;
                 }
                 // グラフに反映
                 AddChartData(intermediateDataHistory);
@@ -578,9 +583,17 @@ namespace DemoApp
                     {
                         var dataId = item.Key;
                         var points = dataSeries[dataId].Points;
+                        //if (dataId == DataId.SIValue ||
+                        //    dataId == DataId.PGA ||
+                        //    dataId == DataId.SeismicIntensity)
+                        //{
+                        //    // 表示しない
+                        //    continue;
+                        //}
                         var scale = DataScales[dataId];
                         points.AddXY(x, item.Value * scale);
                     }
+                    // 平滑化SoundNoiseの追加
                     {
                         var dataId = DataId.SoundNoise;
                         var points = smoothDataSeries[dataId].Points;

@@ -81,7 +81,7 @@
             this.tableLayoutPanel1.Controls.Add(this.groupBox4, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 74F));
@@ -96,9 +96,9 @@
             this.groupBox1.Controls.Add(this.tableLayoutPanel2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(4, 78);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(1347, 66);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
@@ -122,7 +122,7 @@
             this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 19);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
@@ -136,7 +136,7 @@
             this.disconnectButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.disconnectButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.disconnectButton.Location = new System.Drawing.Point(669, 4);
-            this.disconnectButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.disconnectButton.Margin = new System.Windows.Forms.Padding(4);
             this.disconnectButton.Name = "disconnectButton";
             this.disconnectButton.Size = new System.Drawing.Size(125, 42);
             this.disconnectButton.TabIndex = 6;
@@ -149,7 +149,7 @@
             this.connectButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.connectButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.connectButton.Location = new System.Drawing.Point(536, 4);
-            this.connectButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.connectButton.Margin = new System.Windows.Forms.Padding(4);
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(125, 42);
             this.connectButton.TabIndex = 5;
@@ -190,7 +190,7 @@
             this.portsComboBox.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.portsComboBox.FormattingEnabled = true;
             this.portsComboBox.Location = new System.Drawing.Point(137, 4);
-            this.portsComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.portsComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.portsComboBox.Name = "portsComboBox";
             this.portsComboBox.Size = new System.Drawing.Size(125, 31);
             this.portsComboBox.TabIndex = 2;
@@ -214,9 +214,9 @@
             this.groupBox2.Controls.Add(this.tableLayoutPanel3);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(4, 152);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox2.Size = new System.Drawing.Size(1347, 66);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
@@ -235,7 +235,7 @@
             this.tableLayoutPanel3.Controls.Add(this.measurementCheckBox, 1, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(4, 19);
-            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
@@ -248,7 +248,7 @@
             this.memoryIndexGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryIndexGetButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.memoryIndexGetButton.Location = new System.Drawing.Point(1006, 4);
-            this.memoryIndexGetButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.memoryIndexGetButton.Margin = new System.Windows.Forms.Padding(4);
             this.memoryIndexGetButton.Name = "memoryIndexGetButton";
             this.memoryIndexGetButton.Size = new System.Drawing.Size(329, 42);
             this.memoryIndexGetButton.TabIndex = 6;
@@ -261,7 +261,7 @@
             this.memoryDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.memoryDataLongGetButton.Location = new System.Drawing.Point(672, 4);
-            this.memoryDataLongGetButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.memoryDataLongGetButton.Margin = new System.Windows.Forms.Padding(4);
             this.memoryDataLongGetButton.Name = "memoryDataLongGetButton";
             this.memoryDataLongGetButton.Size = new System.Drawing.Size(326, 42);
             this.memoryDataLongGetButton.TabIndex = 5;
@@ -274,7 +274,7 @@
             this.latestDataLongGetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.latestDataLongGetButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.latestDataLongGetButton.Location = new System.Drawing.Point(4, 4);
-            this.latestDataLongGetButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.latestDataLongGetButton.Margin = new System.Windows.Forms.Padding(4);
             this.latestDataLongGetButton.Name = "latestDataLongGetButton";
             this.latestDataLongGetButton.Size = new System.Drawing.Size(326, 42);
             this.latestDataLongGetButton.TabIndex = 4;
@@ -288,7 +288,7 @@
             this.measurementCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.measurementCheckBox.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.measurementCheckBox.Location = new System.Drawing.Point(338, 4);
-            this.measurementCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.measurementCheckBox.Margin = new System.Windows.Forms.Padding(4);
             this.measurementCheckBox.Name = "measurementCheckBox";
             this.measurementCheckBox.Size = new System.Drawing.Size(326, 42);
             this.measurementCheckBox.TabIndex = 7;
@@ -301,9 +301,9 @@
             this.groupBox3.Controls.Add(this.tableLayoutPanel4);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(4, 226);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox3.Size = new System.Drawing.Size(1347, 659);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
@@ -319,7 +319,7 @@
             this.tableLayoutPanel4.Controls.Add(this.latestDataGridView, 1, 1);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(4, 19);
-            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
@@ -332,7 +332,7 @@
             this.dataChartAutoScrollCheckBox.AutoSize = true;
             this.dataChartAutoScrollCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataChartAutoScrollCheckBox.Location = new System.Drawing.Point(4, 4);
-            this.dataChartAutoScrollCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataChartAutoScrollCheckBox.Margin = new System.Windows.Forms.Padding(4);
             this.dataChartAutoScrollCheckBox.Name = "dataChartAutoScrollCheckBox";
             this.dataChartAutoScrollCheckBox.Size = new System.Drawing.Size(931, 42);
             this.dataChartAutoScrollCheckBox.TabIndex = 0;
@@ -347,7 +347,7 @@
             legend1.Name = "Legend1";
             this.dataChart.Legends.Add(legend1);
             this.dataChart.Location = new System.Drawing.Point(4, 54);
-            this.dataChart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataChart.Margin = new System.Windows.Forms.Padding(4);
             this.dataChart.Name = "dataChart";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
@@ -362,7 +362,7 @@
             this.latestDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.latestDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.latestDataGridView.Location = new System.Drawing.Point(943, 54);
-            this.latestDataGridView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.latestDataGridView.Margin = new System.Windows.Forms.Padding(4);
             this.latestDataGridView.Name = "latestDataGridView";
             this.latestDataGridView.ReadOnly = true;
             this.latestDataGridView.RowHeadersWidth = 51;
@@ -375,9 +375,9 @@
             this.groupBox4.Controls.Add(this.tableLayoutPanel5);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(4, 4);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(1347, 66);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
@@ -392,7 +392,7 @@
             this.tableLayoutPanel5.Controls.Add(this.dataFromSensorRadioButton, 0, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(4, 19);
-            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 2;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
@@ -407,7 +407,7 @@
             this.dataFromServerRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFromServerRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.dataFromServerRadioButton.Location = new System.Drawing.Point(673, 4);
-            this.dataFromServerRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataFromServerRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.dataFromServerRadioButton.Name = "dataFromServerRadioButton";
             this.dataFromServerRadioButton.Size = new System.Drawing.Size(662, 42);
             this.dataFromServerRadioButton.TabIndex = 1;
@@ -422,7 +422,7 @@
             this.dataFromSensorRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFromSensorRadioButton.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.dataFromSensorRadioButton.Location = new System.Drawing.Point(4, 4);
-            this.dataFromSensorRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataFromSensorRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.dataFromSensorRadioButton.Name = "dataFromSensorRadioButton";
             this.dataFromSensorRadioButton.Size = new System.Drawing.Size(661, 42);
             this.dataFromSensorRadioButton.TabIndex = 0;
@@ -445,7 +445,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1355, 889);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "DemoApp";
             this.tableLayoutPanel1.ResumeLayout(false);
