@@ -74,7 +74,7 @@ namespace IpcServer
             Console.WriteLine($"IpcServer");
 #endif
             // モード設定
-            var mode = Mode.Dummy;
+            var mode = Mode.Normal;
             Console.WriteLine($"mode:{mode}");
 #if false
             Console.WriteLine($"{nameof(LifetimeServices.LeaseManagerPollTime)}={LifetimeServices.LeaseManagerPollTime}");
@@ -101,21 +101,28 @@ namespace IpcServer
                 {
                     Console.WriteLine($"ポート名を入力[COM1など]");
                     portName = Console.ReadLine();
-                    Console.WriteLine($"{portName} でよろしいですか？[Y/N]");
-                    var read = Console.ReadLine();
-                    if (read.ToUpper() == "Y")
+                    // シリアルポートを設定して通信を開始
+                    try
                     {
+                        serialPort.ErrorReceived += SerialPort_ErrorReceived;
+                        serialPort.PinChanged += SerialPort_PinChanged;
+                        serialPort.DataReceived += SerialPort_DataReceived;
+                        SettingSerialPort(serialPort);
+                        serialPort.PortName = portName;
+                        serialPort.Open();
+                        // 正常終了
                         break;
                     }
-                }
-                // シリアルポートを設定して通信を開始
-                {
-                    serialPort.ErrorReceived += SerialPort_ErrorReceived;
-                    serialPort.PinChanged += SerialPort_PinChanged;
-                    serialPort.DataReceived += SerialPort_DataReceived;
-                    SettingSerialPort(serialPort);
-                    serialPort.PortName = portName;
-                    serialPort.Open();
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine($"終了:Q / 再入力:その他");
+                        var read = Console.ReadLine();
+                        if (read.ToUpper() == "Q")
+                        {
+                            return;
+                        }
+                    }
                 }
             }
 
