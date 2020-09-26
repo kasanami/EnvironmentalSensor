@@ -6,6 +6,7 @@ using Ksnm.ExtensionMethods.System.Collections.Generic.Enumerable;
 using Ksnm.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Runtime.Remoting.Lifetime;
@@ -110,7 +111,7 @@ namespace IpcServer
                         // 正常終了
                         break;
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                         Console.WriteLine($"終了:Q / 再入力:その他");
