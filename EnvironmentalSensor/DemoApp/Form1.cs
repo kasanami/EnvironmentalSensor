@@ -373,6 +373,9 @@ namespace DemoApp
             SeismicIntensity,
         }
         static readonly DataId[] DataIds = (DataId[])Enum.GetValues(typeof(DataId));
+        /// <summary>
+        /// データ表示用係数
+        /// </summary>
         static readonly Dictionary<DataId, double> DataScales = new Dictionary<DataId, double>()
         {
             {DataId.SequenceNumber      , 0.1},
@@ -381,8 +384,8 @@ namespace DemoApp
             {DataId.AmbientLight        , 1},
             {DataId.BarometricPressure  , 0.1},
             {DataId.SoundNoise          , 1},
-            {DataId.eTVOC               , 0.03},
-            {DataId.eCO2                , 0.03},
+            {DataId.eTVOC               , 0.1},
+            {DataId.eCO2                , 0.1},
             {DataId.DiscomfortIndex     , 1},
             {DataId.HeatStroke          , 1},
             {DataId.VibrationInformation, 1},
