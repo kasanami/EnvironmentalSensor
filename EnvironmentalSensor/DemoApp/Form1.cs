@@ -551,6 +551,10 @@ namespace DemoApp
                 dataChartArea.AxisX.LabelStyle.IntervalType = dataChartArea.AxisX.IntervalType;
                 dataChartArea.AxisX.LabelStyle.Interval = 5;
                 dataChartArea.AxisX.LabelStyle.Format = "HH:mm";
+                // Y軸の表示設定
+                dataChartArea.AxisY.Minimum = 0;
+                dataChartArea.AxisY.Maximum = 110;
+                dataChartArea.AxisY.Interval = 10;
             }
         }
 
