@@ -670,6 +670,10 @@ namespace DemoApp
             latestDataGridView.Columns.Clear();
             latestDataGridView.Columns.Add(LatestDataGridView_Columns.Name.ToString(), "名前");
             latestDataGridView.Columns.Add(LatestDataGridView_Columns.Value.ToString(), "値");
+            for (int i = 0; i < latestDataGridView.Columns.Count; i++)
+            {
+                latestDataGridView.Columns[i].ReadOnly = true;
+            }
             {
                 var column = new DataGridViewCheckBoxColumn();
                 column.Name = LatestDataGridView_Columns.Visible.ToString();
@@ -681,7 +685,30 @@ namespace DemoApp
             {
                 latestDataGridView.Rows.Add(DataNames[dataId], "");
             }
+            // イベント
+            latestDataGridView.CurrentCellDirtyStateChanged += LatestDataGridView_CurrentCellDirtyStateChanged;
+            latestDataGridView.CellValueChanged += LatestDataGridView_CellValueChanged;
         }
+
+        private void LatestDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var dataGridView = (DataGridView)sender;
+            if (e.ColumnIndex == (int)LatestDataGridView_Columns.Visible)
+            {
+                Console.WriteLine($"{e.RowIndex}行目のチェックボックスが{dataGridView[e.ColumnIndex, e.RowIndex].Value}に変わりました。");
+            }
+        }
+
+        private void LatestDataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            var dataGridView = (DataGridView)sender;
+            // チェックボックスの変更を検知する
+            if (dataGridView.CurrentCellAddress.X == (int)LatestDataGridView_Columns.Visible && dataGridView.IsCurrentCellDirty)
+            {
+                dataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
         void SetLatestListData(LatestDataLongResponsePayload payload)
         {
             int column = (int)LatestDataGridView_Columns.Value;
