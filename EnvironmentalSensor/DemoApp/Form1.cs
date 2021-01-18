@@ -382,7 +382,7 @@ namespace DemoApp
             {DataId.Temperature         , 1},
             {DataId.RelativeHumidity    , 1},
             {DataId.AmbientLight        , 1},
-            {DataId.BarometricPressure  , 0.1},
+            {DataId.BarometricPressure  , 10},
             {DataId.SoundNoise          , 1},
             {DataId.eTVOC               , 0.1},
             {DataId.eCO2                , 0.1},
@@ -392,6 +392,26 @@ namespace DemoApp
             {DataId.SIValue             , 0.6},
             {DataId.PGA                 , 0.6},
             {DataId.SeismicIntensity    , 1},
+        };
+        /// <summary>
+        /// データ表示用切片
+        /// </summary>
+        static readonly Dictionary<DataId, double> DataBiases = new Dictionary<DataId, double>()
+        {
+            {DataId.SequenceNumber      , 0},
+            {DataId.Temperature         , 0},
+            {DataId.RelativeHumidity    , 0},
+            {DataId.AmbientLight        , 0},
+            {DataId.BarometricPressure  , -10100},
+            {DataId.SoundNoise          , 0},
+            {DataId.eTVOC               , 0},
+            {DataId.eCO2                , 0},
+            {DataId.DiscomfortIndex     , 0},
+            {DataId.HeatStroke          , 0},
+            {DataId.VibrationInformation, 0},
+            {DataId.SIValue             , 0},
+            {DataId.PGA                 , 0},
+            {DataId.SeismicIntensity    , 0},
         };
         static readonly Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
         {
@@ -505,7 +525,7 @@ namespace DemoApp
             dataChart.Series.Clear();
             foreach (var dataId in DataIds)
             {
-                var dataName = DataNames[dataId] + "x" + DataScales[dataId].ToString();
+                var dataName = DataNames[dataId] + "x" + DataScales[dataId].ToString() + DataBiases[dataId].ToString("+0;-#;");
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
                 if (dataId == DataId.SequenceNumber || dataId == DataId.SoundNoise)
@@ -556,7 +576,7 @@ namespace DemoApp
                 dataChartArea.AxisX.LabelStyle.Format = "HH:mm";
                 // Y軸の表示設定
                 dataChartArea.AxisY.Minimum = 0;
-                dataChartArea.AxisY.Maximum = 110;
+                dataChartArea.AxisY.Maximum = 100;
                 dataChartArea.AxisY.Interval = 10;
             }
         }
@@ -598,14 +618,16 @@ namespace DemoApp
                         //    continue;
                         //}
                         var scale = DataScales[dataId];
-                        points.AddXY(x, item.Value * scale);
+                        var bias = DataBiases[dataId];
+                        points.AddXY(x, item.Value * scale + bias);
                     }
                     // 平滑化SoundNoiseの追加
                     {
                         var dataId = DataId.SoundNoise;
                         var points = smoothDataSeries[dataId].Points;
                         var scale = DataScales[dataId];
-                        points.AddXY(x, SmoothIntermediateData.Values[dataId] * scale);
+                        var bias = DataBiases[dataId];
+                        points.AddXY(x, SmoothIntermediateData.Values[dataId] * scale + bias);
                     }
                 }
                 // スクロール位置更新
