@@ -364,7 +364,6 @@
             this.latestDataGridView.Location = new System.Drawing.Point(943, 54);
             this.latestDataGridView.Margin = new System.Windows.Forms.Padding(4);
             this.latestDataGridView.Name = "latestDataGridView";
-            this.latestDataGridView.ReadOnly = true;
             this.latestDataGridView.RowHeadersWidth = 51;
             this.latestDataGridView.RowTemplate.Height = 21;
             this.latestDataGridView.Size = new System.Drawing.Size(392, 578);

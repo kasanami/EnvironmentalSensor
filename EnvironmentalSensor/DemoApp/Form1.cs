@@ -537,6 +537,7 @@ namespace DemoApp
                     series.BorderWidth = 2;
                 }
                 series.Color = DataColors[dataId];
+
                 dataChart.Series.Add(series);
 
                 dataSeries.Add(dataId, series);
@@ -617,9 +618,13 @@ namespace DemoApp
                         //    // 表示しない
                         //    continue;
                         //}
+
+                        var visible = (bool)latestDataGridView[(int)LatestDataGridView_Columns.Visible, (int)dataId].Value;
                         var scale = DataScales[dataId];
                         var bias = DataBiases[dataId];
-                        points.AddXY(x, item.Value * scale + bias);
+                        var dataPoint = new DataPoint(x, item.Value * scale + bias);
+                        dataPoint.IsEmpty = !visible;
+                        points.Add(dataPoint);
                     }
                     // 平滑化SoundNoiseの追加
                     {
@@ -681,9 +686,10 @@ namespace DemoApp
                 column.Width = 50;
                 latestDataGridView.Columns.Add(column);
             }
+            // 初期値設定
             foreach (var dataId in DataIds)
             {
-                latestDataGridView.Rows.Add(DataNames[dataId], "");
+                latestDataGridView.Rows.Add(DataNames[dataId], "0", true);
             }
             // イベント
             latestDataGridView.CurrentCellDirtyStateChanged += LatestDataGridView_CurrentCellDirtyStateChanged;
@@ -695,7 +701,15 @@ namespace DemoApp
             var dataGridView = (DataGridView)sender;
             if (e.ColumnIndex == (int)LatestDataGridView_Columns.Visible)
             {
-                Console.WriteLine($"{e.RowIndex}行目のチェックボックスが{dataGridView[e.ColumnIndex, e.RowIndex].Value}に変わりました。");
+                var value = (bool)dataGridView[e.ColumnIndex, e.RowIndex].Value;
+                Console.WriteLine($"{e.RowIndex}行目のチェックボックスが{value }に変わりました。");
+                var dataId = (DataId)e.RowIndex;
+
+                var points = dataSeries[dataId].Points;
+                foreach (var point in points)
+                {
+                    point.IsEmpty = !value;
+                }
             }
         }
 
