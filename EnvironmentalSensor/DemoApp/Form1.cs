@@ -374,44 +374,49 @@ namespace DemoApp
         }
         static readonly DataId[] DataIds = (DataId[])Enum.GetValues(typeof(DataId));
         /// <summary>
-        /// データ表示用係数
+        /// データ表示を調整する関数
         /// </summary>
-        static readonly Dictionary<DataId, double> DataScales = new Dictionary<DataId, double>()
+        delegate double DataConditioner(double value);
+        static double Straight(double value) { return value; }
+        /// <summary>
+        /// データ表示用調整関数
+        /// </summary>
+        static readonly Dictionary<DataId, DataConditioner> DataConditioners = new Dictionary<DataId, DataConditioner>()
         {
-            {DataId.SequenceNumber      , 0.1},
-            {DataId.Temperature         , 1},
-            {DataId.RelativeHumidity    , 1},
-            {DataId.AmbientLight        , 1},
-            {DataId.BarometricPressure  , 10},
-            {DataId.SoundNoise          , 1},
-            {DataId.eTVOC               , 0.1},
-            {DataId.eCO2                , 0.1},
-            {DataId.DiscomfortIndex     , 1},
-            {DataId.HeatStroke          , 1},
-            {DataId.VibrationInformation, 1},
-            {DataId.SIValue             , 0.6},
-            {DataId.PGA                 , 0.6},
-            {DataId.SeismicIntensity    , 1},
+            {DataId.SequenceNumber      , (v)=>{return v * 0.1;}},
+            {DataId.Temperature         , Straight},
+            {DataId.RelativeHumidity    , Straight},
+            {DataId.AmbientLight        , Straight},
+            {DataId.BarometricPressure  , (v)=>{return Ksnm.Math.InverseLerp( 1000, 1050, v ) * 100;}},
+            {DataId.SoundNoise          , Straight},
+            {DataId.eTVOC               , (v)=>{return v * 0.1;}},
+            {DataId.eCO2                , (v)=>{return v * 0.1;}},
+            {DataId.DiscomfortIndex     , Straight},
+            {DataId.HeatStroke          , Straight},
+            {DataId.VibrationInformation, Straight},
+            {DataId.SIValue             , (v)=>{return v * 0.6;}},
+            {DataId.PGA                 , (v)=>{return v * 0.6;}},
+            {DataId.SeismicIntensity    , Straight},
         };
         /// <summary>
-        /// データ表示用切片
+        /// データ表示用調整名
         /// </summary>
-        static readonly Dictionary<DataId, double> DataBiases = new Dictionary<DataId, double>()
+        static readonly Dictionary<DataId, string> DataConditionerNames = new Dictionary<DataId, string>()
         {
-            {DataId.SequenceNumber      , 0},
-            {DataId.Temperature         , 0},
-            {DataId.RelativeHumidity    , 0},
-            {DataId.AmbientLight        , 0},
-            {DataId.BarometricPressure  , -10100},
-            {DataId.SoundNoise          , 0},
-            {DataId.eTVOC               , 0},
-            {DataId.eCO2                , 0},
-            {DataId.DiscomfortIndex     , 0},
-            {DataId.HeatStroke          , 0},
-            {DataId.VibrationInformation, 0},
-            {DataId.SIValue             , 0},
-            {DataId.PGA                 , 0},
-            {DataId.SeismicIntensity    , 0},
+            {DataId.SequenceNumber      , "x0.1"},
+            {DataId.Temperature         , ""},
+            {DataId.RelativeHumidity    , ""},
+            {DataId.AmbientLight        , ""},
+            {DataId.BarometricPressure  , "=(1000～1050)"},
+            {DataId.SoundNoise          , ""},
+            {DataId.eTVOC               , "x0.1"},
+            {DataId.eCO2                , "x0.1"},
+            {DataId.DiscomfortIndex     , ""},
+            {DataId.HeatStroke          , ""},
+            {DataId.VibrationInformation, ""},
+            {DataId.SIValue             , "x0.6"},
+            {DataId.PGA                 , "x0.6"},
+            {DataId.SeismicIntensity    , ""},
         };
         static readonly Dictionary<DataId, string> DataNames = new Dictionary<DataId, string>()
         {
@@ -525,7 +530,7 @@ namespace DemoApp
             dataChart.Series.Clear();
             foreach (var dataId in DataIds)
             {
-                var dataName = DataNames[dataId] + "x" + DataScales[dataId].ToString() + DataBiases[dataId].ToString("+0;-#;");
+                var dataName = DataNames[dataId] + DataConditionerNames[dataId];
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
                 if (dataId == DataId.SequenceNumber || dataId == DataId.SoundNoise)
@@ -545,7 +550,7 @@ namespace DemoApp
 
             {
                 var dataId = DataId.SoundNoise;
-                var dataName = DataNames[dataId] + "(平滑)" + "x" + DataScales[dataId].ToString();
+                var dataName = DataNames[dataId] + "(平滑)" + DataConditionerNames[dataId];
                 var series = new Series(dataName);
                 series.ChartType = SeriesChartType.Line;
                 series.BorderWidth = 2;
@@ -580,6 +585,11 @@ namespace DemoApp
                 dataChartArea.AxisY.Maximum = 100;
                 dataChartArea.AxisY.Interval = 10;
             }
+        }
+
+        bool IsChartDataVisible(DataId dataId)
+        {
+            return (bool)latestDataGridView[(int)LatestDataGridView_Columns.Visible, (int)dataId].Value;
         }
 
         void AddChartData(Dictionary<DateTime, IntermediateData> intermediateDataHistory)
@@ -619,20 +629,17 @@ namespace DemoApp
                         //    continue;
                         //}
 
-                        var visible = (bool)latestDataGridView[(int)LatestDataGridView_Columns.Visible, (int)dataId].Value;
-                        var scale = DataScales[dataId];
-                        var bias = DataBiases[dataId];
-                        var dataPoint = new DataPoint(x, item.Value * scale + bias);
-                        dataPoint.IsEmpty = !visible;
+                        var dataPoint = new DataPoint(x, DataConditioners[dataId](item.Value));
+                        dataPoint.IsEmpty = !IsChartDataVisible(dataId);
                         points.Add(dataPoint);
                     }
                     // 平滑化SoundNoiseの追加
                     {
                         var dataId = DataId.SoundNoise;
                         var points = smoothDataSeries[dataId].Points;
-                        var scale = DataScales[dataId];
-                        var bias = DataBiases[dataId];
-                        points.AddXY(x, SmoothIntermediateData.Values[dataId] * scale + bias);
+                        var dataPoint = new DataPoint(x, DataConditioners[dataId](SmoothIntermediateData.Values[dataId]));
+                        dataPoint.IsEmpty = !IsChartDataVisible(dataId);
+                        points.Add(dataPoint);
                     }
                 }
                 // スクロール位置更新
@@ -705,10 +712,22 @@ namespace DemoApp
                 Console.WriteLine($"{e.RowIndex}行目のチェックボックスが{value }に変わりました。");
                 var dataId = (DataId)e.RowIndex;
 
-                var points = dataSeries[dataId].Points;
-                foreach (var point in points)
+                // 表示を切り替え
                 {
-                    point.IsEmpty = !value;
+                    var points = dataSeries[dataId].Points;
+                    foreach (var point in points)
+                    {
+                        point.IsEmpty = !value;
+                    }
+                }
+                // 平滑も切り替え
+                if (smoothDataSeries.ContainsKey(dataId))
+                {
+                    var points = smoothDataSeries[dataId].Points;
+                    foreach (var point in points)
+                    {
+                        point.IsEmpty = !value;
+                    }
                 }
             }
         }
